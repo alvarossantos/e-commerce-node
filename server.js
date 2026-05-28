@@ -4,6 +4,8 @@ const pool = require('./src/backend/config/database');
 
 // Importanções
 const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
+const estoqueRoutes = require('./src/backend/routes/estoqueRoutes');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 
 app.use('/usuarios', usuarioRoutes);
+app.use('/estoque', estoqueRoutes);
 
 // Rota de Teste
 app.get('/', async(req, res) => {
