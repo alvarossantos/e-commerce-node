@@ -1,12 +1,17 @@
 require('dotenv').config();
 const express = require('express');
-const pool = require('./src/config/database');
+const pool = require('./src/backend/config/database');
+
+// Importanções
+const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
+
+app.use('/usuarios', usuarioRoutes);
 
 // Rota de Teste
 app.get('/', async(req, res) => {
