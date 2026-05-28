@@ -78,6 +78,17 @@ class UsuarioRepository {
         const { rows } = await pool.query(sql, params);
         return rows[0] || null;
     }
+
+    async inativarConta(id) {
+        const sql = `
+            UPDATE usuarios 
+            SET ativo = false 
+            WHERE id = $1
+            RETURNING id, nome, email, ativo;
+        `;
+        const { rows } = await pool.query(sql, [id]);
+        return rows[0] || null;
+    }
 }
 
 module.exports = new UsuarioRepository();

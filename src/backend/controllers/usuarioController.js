@@ -125,3 +125,23 @@ exports.atualizarFoto = async (req, res) => {
         res.status(500).json({ mensagem: 'Erro ao atualizar foto do usuário.' });
     }
 };
+
+exports.inativarConta = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const usuarioInativo = await UsuarioRepository.inativarConta(id);
+
+        if (!usuarioInativo) {
+            return res.status(404).json({ mensagem: 'Usuário não encontrado.' });
+        }
+
+        res.status(200).json({
+            mensagem: "Conta inativada com sucesso! O usuário não poderá mais realizar login.",
+            usuario: usuarioInativo
+        });
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({ mensagem: 'Erro ao inativar conta do usuário.' });
+    }
+}

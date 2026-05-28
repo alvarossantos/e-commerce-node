@@ -6,6 +6,7 @@ const usuarioController = require('../controllers/usuarioController');
 router.post('/', usuarioController.criar);
 router.get('/', usuarioController.listar);
 router.get('/:id', usuarioController.buscar);
+router.patch('/:id/inativar', usuarioController.inativarConta);
 
 // Rotas de atualizar/modificar dados do Usuário
 router.put('/:id', usuarioController.atualizarUsuario);
