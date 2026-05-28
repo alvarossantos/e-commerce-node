@@ -1,0 +1,17 @@
+e-commerce-node/
+├── node_modules/
+├── src/
+│   ├── config/          # Configurações globais (ex: conexão com o Postgres)
+│   ├── controllers/     # Lida com as requisições e respostas HTTP (req, res)
+│   ├── models/          # Definição das entidades e estruturas de dados
+│   ├── repositories/    # Comunicação direta com o banco de dados (instruções SQL)
+│   ├── services/        # Regras de negócio (ex: verificar estoque antes de vender)
+│   ├── routes/          # Definição das rotas da aplicação (separadas por módulos)
+│   ├── views/           # Templates front-end
+│   │   ├── static/      # CSS, JS, Imagens, Uploads
+│   │   └── templates/   # Telas em HTML (usaremos EJS para renderizar os dados dinâmicos)
+│   └── app.js           # Configuração da aplicação Express e middlewares
+├── .env                 # Variáveis de ambiente (credenciais do banco, chaves secretas)
+├── .gitignore           # Arquivos ignorados pelo Git (node_modules, .env)
+├── package.json         # Dependências e scripts do projeto Node
+└── server.js            # Ponto de entrada (apenas inicia o servidor)
