@@ -5,6 +5,7 @@ const pool = require('./src/backend/config/database');
 // Importanções
 const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
 const estoqueRoutes = require('./src/backend/routes/estoqueRoutes');
+const produtoRoutes = require('./src/backend/routes/produtosRoutes');
 
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: true}));
 
 app.use('/usuarios', usuarioRoutes);
 app.use('/estoque', estoqueRoutes);
+app.use('/produtos', produtoRoutes);
 
 // Rota de Teste
 app.get('/', async(req, res) => {
