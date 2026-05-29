@@ -6,6 +6,7 @@ const pool = require('./src/backend/config/database');
 const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
 const estoqueRoutes = require('./src/backend/routes/estoqueRoutes');
 const produtoRoutes = require('./src/backend/routes/produtosRoutes');
+const pedidoRoutes = require('./src/backend/routes/pedidoRoutes');
 
 
 const app = express();
@@ -17,6 +18,8 @@ app.use(express.urlencoded({ extended: true}));
 app.use('/usuarios', usuarioRoutes);
 app.use('/estoque', estoqueRoutes);
 app.use('/produtos', produtoRoutes);
+app.use('/pedidos', pedidoRoutes);
+
 
 // Rota de Teste
 app.get('/', async(req, res) => {
