@@ -1,0 +1,67 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h3 class="fw-bold mb-4">
+                    <%= produto ? 'Editar Produto' : 'Cadastrar Novo Produto' %>
+                </h3>
+                
+                <form action="<%= produto ? '/admin/produtos/' + produto.id + '?_method=PUT' : '/admin/produtos' %>" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Nome do Produto</label>
+                            <input type="text" name="nome" class="form-control" value="<%= produto ? produto.nome : '' %>" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Preço (R$)</label>
+                            <input type="number" step="0.01" name="preco" class="form-control" value="<%= produto ? parseFloat(produto.preco).toFixed(2) : '' %>" required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Estoque Atual</label>
+                            <input type="number" step="1" min="0" name="quantidade" class="form-control" value="<%= typeof quantidade_estoque !== 'undefined' ? quantidade_estoque : '0' %>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Categoria</label>
+                            <select name="categoria" class="form-select">
+                                <option value="Hardware" <%= produto && produto.categoria === 'Hardware' ? 'selected' : '' %>>Hardware</option>
+                                <option value="Periféricos" <%= produto && produto.categoria === 'Periféricos' ? 'selected' : '' %>>Periféricos</option>
+                                <option value="Portáteis" <%= produto && produto.categoria === 'Portáteis' ? 'selected' : '' %>>Portáteis</option>
+                                <option value="Gamer" <%= produto && produto.categoria === 'Gamer' ? 'selected' : '' %>>Gamer</option>
+                                <option value="Monitores" <%= produto && produto.categoria === 'Monitores' ? 'selected' : '' %>>Monitores</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">SKU / Modelo</label>
+                            <input type="text" name="sku" class="form-control" value="<%= produto ? produto.sku : '' %>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">URL da Imagem (Link Externo)</label>
+                            <input type="text" name="url_imagem" class="form-control" value="<%= produto ? produto.url_imagem : '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Ou carregar do computador</label>
+                            <input type="file" name="foto_local" class="form-control">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Descrição Completa</label>
+                            <textarea name="descricao" class="form-control" rows="4" required><%= produto ? produto.descricao : '' %></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Código de Barras (EAN)</label>
+                            <input type="text" name="codigo_barras" class="form-control" value="<%= produto ? produto.codigo_barras : '' %>">
+                        </div>
+                    </div>
+
+                    <div class="mt-5 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow">
+                            <%= produto ? 'Salvar Alterações' : 'Cadastrar Produto' %>
+                        </button>
+                        <a href="/admin/produtos" class="btn btn-light btn-lg rounded-pill px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

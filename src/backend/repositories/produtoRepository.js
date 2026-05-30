@@ -1,23 +1,41 @@
 const pool = require('../config/database');
 
 class ProdutoRepository {
-    async criar(produto) {
-        const sql = `
-            INSERT INTO produtos (nome, sku, preco, descricao, codigo_barras, categoria, url_imagem)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
-            RETURNING *;
-        `;
-        const params = [
-            produto.nome,
-            produto.sku,
-            produto.preco,
-            produto.descricao,
-            produto.codigo_barras,
-            produto.categoria,
-            produto.url_imagem
-        ];
-        const { rows } = await pool.query(sql, params);
-        return rows[0];
+    async criar(produto, quantidadeInicial = 0) {
+        const client = await pool.connect();
+        try {
+            const sqlProduto = `
+                INSERT INTO produtos (nome, sku, preco, descricao, codigo_barras, categoria, url_imagem)
+                VALUES ($1, $2, $3, $4, $5, $6, $7)
+                RETURNING *;
+            `;
+            const params = [
+                produto.nome,
+                produto.sku,
+                produto.preco,
+                produto.descricao,
+                produto.codigo_barras,
+                produto.categoria,
+                produto.url_imagem
+            ];
+            const { rows: rowsProduto } = await client.query(sqlProduto, params);
+            const novoProduto = rowsProduto[0];
+        
+            const sqlEstoque = `
+                INSERT INTO estoque (produto_id, quantidade, estoque_minimo)
+                VALUES ($1, $2, 5)
+                RETURNING *;
+            `;
+            await client.query(sqlEstoque, [novoProduto.id, quantidadeInicial]);
+
+            await client.query('COMMIT');
+            return novoProduto;
+        } catch (erro) {
+            await client.query('ROLLBACK');
+            throw erro;
+        } finally {
+            client.release();
+        }
     }
 
     async listarTodos() {

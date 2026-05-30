@@ -85,6 +85,20 @@ class PedidoRepository {
         const { rows } = await pool.query(sql, [novoStatus, pedidoId]);
         return rows[0] || null;
     }
+
+    async contarTotal() {
+        const { rows } = await pool.query('SELECT COUNT(*) AS total FROM pedidos');
+        return rows[0].total;
+    }
+
+    async calcularFaturamento() {
+        const { rows } = await pool.query(`
+            SELECT COALESCE(SUM(valor_total), 0) AS total
+            FROM pedidos
+            WHERE status = 'pago';
+        `);
+        return parseFloat(rows[0].total);
+    }
 }
 
 module.exports = new PedidoRepository();

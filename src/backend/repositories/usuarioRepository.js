@@ -89,6 +89,11 @@ class UsuarioRepository {
         const { rows } = await pool.query(sql, [id]);
         return rows[0] || null;
     }
+
+    async contarTotal() {
+        const { rows } = await pool.query('SELECT COUNT(*) AS total FROM usuarios');
+        return rows[0].total;
+    }
 }
 
 module.exports = new UsuarioRepository();
