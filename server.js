@@ -10,8 +10,8 @@ const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
 const estoqueRoutes = require('./src/backend/routes/estoqueRoutes');
 const produtoRoutes = require('./src/backend/routes/produtosRoutes');
 const pedidoRoutes = require('./src/backend/routes/pedidoRoutes');
+const lojaRoutes = require('./src/backend/routes/lojaRoutes');
 const adminRoutes = require('./src/backend/routes/adminRoutes');
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 // Habilitar suporte a PUT, PATCH e DELETE via formulários EJS/HTML
 app.use(methodOverride('_method'));
 
+app.use('/', lojaRoutes);
 app.use('/usuarios', usuarioRoutes);
 app.use('/estoque', estoqueRoutes);
 app.use('/produtos', produtoRoutes);

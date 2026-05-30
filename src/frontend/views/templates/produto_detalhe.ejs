@@ -1,0 +1,86 @@
+<div class="container py-5 font-loja">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none text-muted">Início</a></li>
+            <li class="breadcrumb-item"><a href="/?categoria=<%= produto.categoria %>" class="text-decoration-none text-muted"><%= produto.categoria %></a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page"><%= produto.nome %></li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden p-4 bg-white">
+        <div class="row g-5">
+            
+            <div class="col-md-6 d-flex align-items-center justify-content-center bg-light rounded-4 p-4" style="min-height: 400px;">
+                <img src="<%= produto.url_imagem ? produto.url_imagem : '/static/img/produtos/placeholder.png' %>" class="img-fluid rounded-3" style="max-height: 420px; object-fit: contain;" alt="<%= produto.nome %>">
+            </div>
+
+            <div class="col-md-6 d-flex flex-column justify-content-between">
+                <div>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3 fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                        <%= produto.categoria %>
+                    </span>
+                    <h1 class="fw-bold text-dark mb-2 h2"><%= produto.nome %></h1>
+                    <p class="text-muted small mb-4">Modelo/SKU: <span class="text-dark fw-bold"><%= produto.sku %></span></p>
+
+                    <div class="mb-4">
+                        <% if (estoque && estoque.quantidade > 0) { %>
+                            <span class="text-success fw-bold bg-success-subtle px-3 py-1.5 rounded-pill small">
+                                <i class="fas fa-check-circle me-1"></i> Em estoque (Disponível)
+                            </span>
+                        <% } else { %>
+                            <span class="text-danger fw-bold bg-danger-subtle px-3 py-1.5 rounded-pill small">
+                                <i class="fas fa-times-circle me-1"></i> Produto Indisponível / Esgotado
+                            </span>
+                        <% } %>
+                    </div>
+
+                    <div class="bg-light p-4 rounded-4 mb-4">
+                        <span class="text-muted small d-block mb-1">Preço à vista no PIX ou Boleto</span>
+                        <h2 class="fw-bold text-primary mb-0 display-6">R$ <%= parseFloat(produto.preco).toFixed(2) %></h2>
+                        <span class="text-muted x-small">Ou em até 10x sem juros nos cartões</span>
+                    </div>
+
+                    <h6 class="fw-bold text-dark mb-2"><i class="fas fa-align-left me-1 text-muted"></i> Informações do Produto</h6>
+                    <p class="text-secondary text-wrap text-break mb-4" style="white-space: pre-line; line-height: 1.6; font-size: 0.95rem;">
+                        <%= produto.descricao %>
+                    </p>
+                </div>
+
+                <form action="/carrinho/adicionar" method="POST" class="mt-auto">
+                    <input type="hidden" name="produto_id" value="<%= produto.id %>">
+                    <div class="d-flex gap-3 align-items-center">
+                        <div style="width: 110px;">
+                            <label class="form-label x-small fw-bold text-muted mb-1">Quantidade</label>
+                            <input type="number" name="quantidade" class="form-control rounded-pill text-center border-2 py-2" value="1" min="1" max="<%= estoque ? estoque.quantidade : 1 %>" <%= (estoque && estoque.quantidade > 0) ? '' : 'disabled' %>>
+                        </div>
+                        <div class="flex-grow-1 pt-4">
+                            <% if (estoque && estoque.quantidade > 0) { %>
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold py-2.5 shadow-sm btn-comprar transition-hover">
+                                    <i class="fas fa-shopping-bag me-2"></i> Adicionar ao Carrinho
+                                </button>
+                            <% } else { %>
+                                <button type="button" class="btn btn-secondary btn-lg w-100 rounded-pill fw-bold py-2.5" disabled>
+                                    Avisar quando chegar
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+    .font-loja { font-family: 'Plus Jakarta Sans', sans-serif; }
+    
+    .x-small { font-size: 0.75rem; }
+    .bg-primary-subtle { background-color: #e3f2fd !important; }
+    .bg-success-subtle { background-color: #e8f5e9 !important; }
+    .bg-danger-subtle { background-color: #ffebee !important; }
+    
+    .btn-comprar { background: linear-gradient(135deg, #0d6efd, #0a58ca); border: none; }
+    .btn-comprar:hover { background: linear-gradient(135deg, #0a58ca, #084298); }
+</style>

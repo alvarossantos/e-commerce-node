@@ -76,6 +76,29 @@ class ProdutoRepository {
         const { rows } = await pool.query(sql, [id]);
         return rows[0];
     }
+
+    async buscarVitrine(busca = null, categoria = null) {
+        let sql = `SELECT * FROM produtos WHERE 1=1`;
+        const params = [];
+        let contador = 1;
+
+        if (categoria) {
+            sql += ` AND categoria = $${contador}`;
+            params.push(categoria);
+            contador++;
+        }
+
+        if (busca) {
+            sql += ` AND (nome ILIKE $${contador} OR descricao ILIKE $${contador})`;
+            params.push(`%${busca}%`);
+            contador++;
+        }
+
+        sql += ` ORDER BY id DESC`;
+
+        const { rows } = await pool.query(sql, params);
+        return rows;
+    }
 }
 
 module.exports = new ProdutoRepository();
