@@ -1,0 +1,37 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card border-0 shadow rounded-4 p-4 mt-4">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-circle fa-4x text-primary mb-3"></i>
+                    <h3 class="fw-bold">Bem-vindo de volta!</h3>
+                    <p class="text-muted small">Faça login para aceder à sua conta.</p>
+                </div>
+
+                <% if (typeof erro !== 'undefined' && erro) { %>
+                    <div class="alert alert-danger small py-2 rounded-3 text-center"><%= erro %></div>
+                <% } %>
+                <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+                    <div class="alert alert-success small py-2 rounded-3 text-center"><%= sucesso %></div>
+                <% } %>
+
+                <form action="/login" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold text-muted small">E-mail</label>
+                        <input type="email" name="email" class="form-control rounded-pill px-4" required placeholder="seu@email.com">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small">Senha</label>
+                        <input type="password" name="senha" class="form-control rounded-pill px-4" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">Entrar na Conta</button>
+                </form>
+                
+                <div class="text-center mt-4 pt-3 border-top">
+                    <span class="text-muted small">Ainda não tem conta?</span>
+                    <a href="/cadastro" class="text-decoration-none fw-bold ms-1">Criar conta grátis</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

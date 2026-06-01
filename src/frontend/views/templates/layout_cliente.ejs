@@ -30,18 +30,45 @@
                 </form>
 
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-                    <li class="nav-item me-3">
-                        <a class="nav-link fw-bold" href="/login"><i class="fas fa-user-circle fs-5 me-1"></i> Entrar / Cadastrar</a>
-                    </li>
+    
+                    <% if (usuarioLogado) { %>
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link dropdown-toggle fw-bold text-white d-flex align-items-center" href="#" id="menuUsuario" role="button" data-bs-toggle="dropdown">
+                                <img src="<%= usuarioLogado.url_foto %>" class="rounded-circle me-2 bg-white" style="width: 32px; height: 32px; object-fit: cover; padding: 2px;"> 
+                                Olá, <%= usuarioLogado.nome.split(' ')[0] %>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                
+                                <% if (usuarioLogado.is_admin) { %>
+                                    <li>
+                                        <a class="dropdown-item fw-bold text-primary py-2" href="/admin/dashboard">
+                                            <i class="fas fa-shield-alt me-2"></i> Painel de Administração
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                <% } %>
+                                
+                                <li><a class="dropdown-item py-2" href="/pedidos"><i class="fas fa-box me-2"></i> Meus Pedidos</a></li>
+                                <li><a class="dropdown-item py-2" href="/perfil"><i class="fas fa-cog me-2"></i> Minha Conta</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2 text-danger fw-bold" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Sair da Conta</a></li>
+                            </ul>
+                        </li>
+                        
+                    <% } else { %>
+                        <li class="nav-item me-3">
+                            <a class="nav-link fw-bold" href="/login"><i class="fas fa-user-circle fs-5 me-1"></i> Entrar / Cadastrar</a>
+                        </li>
+                    <% } %>
+
                     <li class="nav-item">
                         <a class="btn btn-outline-light position-relative rounded-pill px-3" href="/carrinho">
                             <i class="fas fa-shopping-cart"></i> Carrinho
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
-                                0
-                            </span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">0</span>
                         </a>
                     </li>
                 </ul>
+
             </div>
         </div>
     </nav>

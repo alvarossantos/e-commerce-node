@@ -1,0 +1,50 @@
+<div class="container py-5 font-custom">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <h4 class="fw-bold mb-4">
+                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                    <%= endereco ? 'Editar Endereço de Entrega' : 'Novo Endereço de Entrega' %>
+                </h4>
+
+                <form action="<%= endereco ? '/perfil/endereco/' + endereco.id + '?_method=PUT' : '/perfil/endereco' %>" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-9">
+                            <label class="form-label small fw-bold text-muted">Rua / Logradouro</label>
+                            <input type="text" name="logradouro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.logradouro : '' %>" required placeholder="Av. Paulista">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Número</label>
+                            <input type="text" name="numero" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.numero : '' %>" required placeholder="123">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Bairro</label>
+                            <input type="text" name="bairro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.bairro : '' %>" required placeholder="Centro">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Complemento</label>
+                            <input type="text" name="complemento" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.complemento : '' %>" placeholder="Apto 42, Bloco B">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">Cidade</label>
+                            <input type="text" name="cidade" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cidade : '' %>" required placeholder="São Paulo">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">Estado</label>
+                            <input type="text" name="estado" class="form-control rounded-pill px-3 text-uppercase" maxlength="2" value="<%= endereco ? endereco.estado : '' %>" required placeholder="SP">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-muted">CEP</label>
+                            <input type="text" name="cep" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cep : '' %>" required placeholder="01311-200">
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                        <a href="/perfil" class="btn btn-light rounded-pill px-4 fw-bold flex-grow-1">Cancelar</a>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold flex-grow-1 shadow-sm">Salvar Endereço</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -40,28 +40,21 @@ class UsuarioRepository {
         return rows[0];    
     }
 
-    async buscarPorEmail(email) {
-        const sql = `
-            SELECT * FROM usuarios WHERE email = $1;
-        `;
-        const { rows } = await pool.query(sql, [email]);
+    async buscarPorId(id) {
+        const sql = `SELECT id, nome, email, senha_hash, cpf, data_nascimento, telefone, url_foto, is_admin FROM usuarios WHERE id = $1;`;
+        const { rows } = await pool.query(sql, [id]);
         return rows[0];
     }
 
-    async atualizarUsuario(usuario) {
+    async atualizarPerfil(id, usuario) {
         const sql = `
-            UPDATE usuarios SET nome = $1, senha_hash = $2, telefone = $3
-            WHERE id = $4
-            RETURNING id, nome, email, telefone;
+            UPDATE usuarios 
+            SET nome = $1, telefone = $2, senha_hash = $3
+            WHERE id = $4 RETURNING *;
         `;
-        const params = [
-            usuario.nome,
-            usuario.senha_hash,
-            usuario.telefone,
-            usuario.id
-        ];
+        const params = [usuario.nome, usuario.telefone, usuario.senha_hash, id];
         const { rows } = await pool.query(sql, params);
-        return rows[0] || null;
+        return rows[0];
     }
 
     async atualizarFoto(id, url_foto) {
@@ -69,14 +62,14 @@ class UsuarioRepository {
             UPDATE usuarios 
             SET url_foto = $1 
             WHERE id = $2
-            RETURNING id, url_foto;
+            RETURNING *;
         `;
         const params = [
             url_foto,
             id
         ];
         const { rows } = await pool.query(sql, params);
-        return rows[0] || null;
+        return rows[0];
     }
 
     async inativarConta(id) {
