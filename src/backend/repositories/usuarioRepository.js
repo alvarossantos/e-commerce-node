@@ -31,12 +31,11 @@ class UsuarioRepository {
         return rows;
     }
 
-    async buscarPorId(id) {
+    async buscarPorEmail(email) {
         const sql = `
-            SELECT id, nome, email, cpf, data_nascimento, telefone, criado_em, ativo, is_admin
-            FROM usuarios WHERE id = $1;
+            SELECT * FROM usuarios WHERE email = $1;
         `;
-        const { rows } = await pool.query(sql, [id]);
+        const { rows } = await pool.query(sql, [email]);
         return rows[0];    
     }
 

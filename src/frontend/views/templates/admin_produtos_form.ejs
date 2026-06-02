@@ -6,7 +6,7 @@
                     <%= produto ? 'Editar Produto' : 'Cadastrar Novo Produto' %>
                 </h3>
                 
-                <form action="<%= produto ? '/admin/produtos/' + produto.id + '?_method=PUT' : '/admin/produtos' %>" method="POST">
+                <form action="<%= produto ? '/admin/produtos/' + produto.id + '?_method=PUT' : '/admin/produtos' %>" method="POST" enctype="multipart/form-data">
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-muted">Nome do Produto</label>

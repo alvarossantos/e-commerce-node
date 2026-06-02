@@ -20,10 +20,11 @@ app.use(cookieParser());
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src/frontend/views/templates'));
-app.use('/static', express.static(path.join(__dirname, 'src/frontend/public')));
+app.use(express.static(path.join(__dirname, 'src/frontend/static')));
 
 // Importanções
 const usuarioRoutes = require('./src/backend/routes/usuarioRoutes');
+const enderecoRoutes = require('./src/backend/routes/enderecoRoutes');
 const estoqueRoutes = require('./src/backend/routes/estoqueRoutes');
 const produtoRoutes = require('./src/backend/routes/produtosRoutes');
 const pedidoRoutes = require('./src/backend/routes/pedidoRoutes');
@@ -32,7 +33,9 @@ const adminRoutes = require('./src/backend/routes/adminRoutes');
 const authRoutes = require('./src/backend/routes/authRoutes');
 const perfilRoutes = require('./src/backend/routes/perfilRoutes');
 const { verificarAdmin, injetarUsuarioNoEJS } = require('./src/backend/middlewares/authMiddleware');
-
+const carrinhoRoutes = require('./src/backend/routes/carrinhoRoutes');
+const checkoutRoutes = require('./src/backend/routes/checkoutRoutes');
+const carrinhoMiddleware = require('./src/backend/middlewares/carrinhoMiddleware');
 
 // Habilitar suporte a PUT, PATCH e DELETE via formulários EJS/HTML
 app.use(methodOverride('_method'));
@@ -40,15 +43,21 @@ app.use(methodOverride('_method'));
 // Midlleware que injeta o usuário no EJS 
 app.use(injetarUsuarioNoEJS);
 
+// Midlleware da contagem do carrinho
+app.use(carrinhoMiddleware);
+
 // Rotas
 app.use('/', lojaRoutes);
 app.use('/', authRoutes);
 
 app.use('/usuarios', usuarioRoutes);
+app.use('/enderecos', enderecoRoutes);
 app.use('/perfil', perfilRoutes);
 app.use('/estoque', estoqueRoutes);
 app.use('/produtos', produtoRoutes);
 app.use('/pedidos', pedidoRoutes);
+app.use('/carrinho', carrinhoRoutes);
+app.use('/checkout', checkoutRoutes);
 
 app.use('/admin', verificarAdmin, adminRoutes);
 

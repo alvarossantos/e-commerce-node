@@ -13,6 +13,7 @@ exports.renderizarDashboard = async (req, res) => {
         const produtosEmAlerta = await EstoqueRepository.listarBaixoEstoque();
 
         res.render('admin_dashboard', {
+            layout: 'layout',
             totalUsuarios: totalUsuarios,
             totalPedidos: totalPedidos,
             faturamento: faturamento,
@@ -74,14 +75,30 @@ exports.renderizarFormEditar = async (req, res) => {
 
 exports.salvarNovoProduto = async (req, res) => {
     try {
+        if (req.file) {
+            const nomeArquivo = `prod_${Date.now()}.webp`;
+            const caminhoDestino = path.join(process.cwd(), 'src', 'frontend', 'static', 'img', 'produtos');
+        
+            if (!fs.existsSync(caminhoDestino)) {
+                fs.mkdirSync(caminhoDestino, { recursive: true });
+            }
+
+            await sharp(req.file.buffer)
+                .resize(800, 800, { fit: 'inside'})
+                .webp({ quality: 80 })
+                .toFile(path.join(caminhoDestinoAbsoluto, nomeArquivo));
+
+            req.body.url_imagem = `/img/produtos/${nomeArquivo}`;
+        }
+
         const novoProduto = new Produto(req.body);
-        const quantidadeEstoque = req.body.quantidade || 0;
+        const quantidadeEstoque = parseInt(req.body.quantidade) || 0;
      
         await ProdutoRepository.criar(novoProduto, quantidadeEstoque);
-        res.redirect('/admin/produtos');
+        res.redirect('/admin/produtos?sucesso=Produto criado com sucesso!');
     } catch (erro) {
         console.error("=== ERRO AO SALVAR NOVO PRODUTO ===", erro);
-        res.status(500).json({ mensagem: 'Erro interno ao salvar novo produto.' });
+        res.redirect('/admin/produtos?erro=Erro ao criar produto.');
     }
 };
 

@@ -48,7 +48,7 @@ CREATE TABLE produtos (
     descricao TEXT,
     codigo_barras VARCHAR(13) UNIQUE,                -- Padrão EAN-13, por exemplo
     categoria VARCHAR(100),                          -- Classificação do item
-    url_imagem TEXT DEFAULT '/static/img/produtos/placeholder.png',
+    url_imagem TEXT DEFAULT '/img/produtos/placeholder.png',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -93,6 +93,29 @@ CREATE TABLE itens_pedido (
 
     -- Impede que o mesmo produto seja inserido duas vezes como linhas separadas no mesmo pedido
     CONSTRAINT unique_produto_pedido UNIQUE (pedido_id, produto_id)
+);
+
+-- ==========================================
+-- ESTRUTURA DO CARRINHO DE COMPRAS HÍBRIDO
+-- ==========================================
+
+-- Tabela de Carrinhos (O cesto que pertence a um usuário logado)
+CREATE TABLE carrinhos (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER UNIQUE REFERENCES usuarios(id) ON DELETE CASCADE,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela de Itens do Carrinho (O que está dentro do cesto)
+CREATE TABLE carrinho_itens (
+    id SERIAL PRIMARY KEY,
+    carrinho_id INTEGER REFERENCES carrinhos(id) ON DELETE CASCADE,
+    produto_id INTEGER NOT NULL REFERENCES produtos(id) ON DELETE CASCADE,
+    quantidade INTEGER NOT NULL DEFAULT 1 CHECK (quantidade > 0),
+    adicionado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Impede que o mesmo produto duplique as linhas. Se existir, o Node vai somar a quantidade.
+    UNIQUE(carrinho_id, produto_id) 
 );
 
 ---

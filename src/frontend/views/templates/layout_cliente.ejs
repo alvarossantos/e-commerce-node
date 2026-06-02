@@ -48,7 +48,7 @@
                                     <li><hr class="dropdown-divider"></li>
                                 <% } %>
                                 
-                                <li><a class="dropdown-item py-2" href="/pedidos"><i class="fas fa-box me-2"></i> Meus Pedidos</a></li>
+                                <li><a class="dropdown-item py-2" href="/pedidos/meus-pedidos"><i class="fas fa-box me-2"></i> Meus Pedidos</a></li>
                                 <li><a class="dropdown-item py-2" href="/perfil"><i class="fas fa-cog me-2"></i> Minha Conta</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item py-2 text-danger fw-bold" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Sair da Conta</a></li>
@@ -64,7 +64,9 @@
                     <li class="nav-item">
                         <a class="btn btn-outline-light position-relative rounded-pill px-3" href="/carrinho">
                             <i class="fas fa-shopping-cart"></i> Carrinho
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">0</span>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                                <%= typeof totalItensCarrinho !== 'undefined' ? totalItensCarrinho : '0' %>
+                            </span>
                         </a>
                     </li>
                 </ul>

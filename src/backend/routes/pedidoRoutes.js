@@ -1,17 +1,27 @@
 const express = require('express');
 const router = express.Router();
 const pedidoController = require('../controllers/pedidoController');
+const { verificarLogado } = require('../middlewares/authMiddleware');
 
-// Listar todos os pedidos do sistema (Admin)
-router.get('/', pedidoController.listarTodos);
+const verificarAdmin = (req, res, next) => {
+    const usuario = res.locals.usuarioLogado || req.usuarioLogado;
+    if (usuario && usuario.is_admin) {
+        return next();
+    }
+    res.redirect('/erro=Acesso Negado! Área restrita a administradores da loja.');
+}
 
-// Finalizar compra (Checkout)
-router.post('/checkout', pedidoController.checkout);
+router.use(verificarLogado);
 
 // Meus Pedidos
-router.get('/usuario/:usuario_id', pedidoController.meusPedidos);
+router.get('/meus-pedidos', pedidoController.meusPedidos);
+router.post('/processar', pedidoController.processarPagamento);
+router.get('/sucesso/:id', pedidoController.renderizarRecibo);
 
+// VISÃO DE ADMIN
+// Listar todos os pedidos do sistema
+router.get('/', verificarAdmin, pedidoController.listarTodos);
 // Atualizar Status do Pagamento
-router.patch('/:id/status', pedidoController.atualizarStatusPagamento);
+router.patch('/:id/status', verificarAdmin, pedidoController.atualizarStatusPagamento);
 
 module.exports = router;

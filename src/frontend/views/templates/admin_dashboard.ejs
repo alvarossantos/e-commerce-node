@@ -1,4 +1,5 @@
 <div class="container py-5">
+    
     <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
         <div>
             <h2 class="fw-bold mb-0"><i class="fas fa-shield-alt text-primary me-2"></i> Painel de Controle</h2>
@@ -7,6 +8,66 @@
         <a href="/" class="btn btn-outline-secondary rounded-pill px-4">
             <i class="fas fa-external-link-alt me-2"></i> Ver Loja
         </a>
+    </div>
+
+    <div class="row g-4 mb-5">
+        
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-success border-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small text-uppercase fw-bold mb-1">Faturamento</p>
+                        <h4 class="fw-bold text-dark mb-0">R$ <%= typeof faturamento !== 'undefined' ? parseFloat(faturamento).toFixed(2) : '0.00' %></h4>
+                    </div>
+                    <div class="text-success rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #d1e7dd;">
+                        <i class="fas fa-dollar-sign fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-primary border-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small text-uppercase fw-bold mb-1">Vendas Totais</p>
+                        <h4 class="fw-bold text-dark mb-0"><%= typeof totalPedidos !== 'undefined' ? totalPedidos : '0' %></h4>
+                    </div>
+                    <div class="text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #cfe2ff;">
+                        <i class="fas fa-shopping-bag fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-info border-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small text-uppercase fw-bold mb-1">Usuários Registados</p>
+                        <h4 class="fw-bold text-dark mb-0"><%= typeof totalUsuarios !== 'undefined' ? totalUsuarios : '0' %></h4>
+                    </div>
+                    <div class="text-info rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #cff4fc;">
+                        <i class="fas fa-users fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-danger border-5">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small text-uppercase fw-bold mb-1">Alertas de Estoque</p>
+                        <h4 class="fw-bold text-dark mb-0"><%= typeof produtosEmAlerta !== 'undefined' ? produtosEmAlerta : '0' %></h4>
+                    </div>
+                    <div class="text-danger rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #f8d7da;">
+                        <i class="fas fa-exclamation-triangle fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row mb-5">

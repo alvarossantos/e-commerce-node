@@ -1,0 +1,147 @@
+<div class="container py-5 font-custom">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold mb-0"><i class="fas fa-shopping-cart text-primary me-2"></i>Seu Carrinho de Compras</h3>
+        
+        <% if (itens.length > 0) { %>
+            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalLimparCarrinho">
+                <i class="fas fa-trash-alt me-1"></i> Esvaziar Carrinho
+            </button>
+        <% } %>
+    </div>
+
+    <form action="/checkout" method="POST" id="form-carrinho">
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                    <% if (itens.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="text-muted small">
+                                    <tr>
+                                        <th style="width: 40px;"></th>
+                                        <th>Produto</th>
+                                        <th class="text-center">Preço</th>
+                                        <th class="text-center">Qtd</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-end"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% for(let item of itens) { 
+                                        let subtotal = parseFloat(item.preco) * item.quantidade;
+                                    %>
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input item-checkbox fs-5" type="checkbox" 
+                                                       name="produtosSelecionados" value="<%= item.produto_id %>" 
+                                                       data-subtotal="<%= subtotal %>" checked onchange="atualizarTotalDinâmico()">
+                                            </td>
+                                            
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="<%= item.url_imagem || '/img/produtos/placeholder.png' %>" class="rounded-3 border me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    <div><h6 class="fw-bold mb-0"><%= item.nome %></h6></div>
+                                                </div>
+                                            </td>
+                                            
+                                            <td class="text-center text-muted">R$ <%= parseFloat(item.preco).toFixed(2) %></td>
+                                            <td class="text-center fw-bold"><%= item.quantidade %></td>
+                                            <td class="text-end fw-bold text-success">R$ <%= subtotal.toFixed(2) %></td>
+                                            
+                                            <td class="text-end">
+                                                <button type="submit" formaction="/carrinho/remover/<%= item.produto_id %>" formmethod="POST" class="btn btn-sm btn-outline-danger border-0" title="Remover item">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="fw-bold text-muted">Seu carrinho está vazio!</h5>
+                            <p class="text-muted small">Explore nossos produtos e encontre algo que você goste.</p>
+                            <a href="/" class="btn btn-outline-primary rounded-pill px-4 mt-2 fw-bold">Continuar Comprando</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-light position-sticky" style="top: 100px;">
+                    <h5 class="fw-bold mb-4">Resumo da Compra</h5>
+                    
+                    <div class="d-flex justify-content-between mb-3 text-muted">
+                        <span>Frete</span>
+                        <span class="badge bg-success text-white">Grátis</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fw-bold fs-5">Total</span>
+                        <span class="fw-bold fs-5 text-primary">R$ <span id="valor-total-exibicao"><%= total.toFixed(2) %></span></span>
+                    </div>
+
+                    <% if (itens.length > 0) { %>
+                        <% if (usuarioLogado) { %>
+                            <button type="submit" id="btn-finalizar" class="btn btn-success w-100 rounded-pill fw-bold py-3 shadow-sm text-uppercase">
+                                Ir para Entrega <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        <% } else { %>
+                            <a href="/login?erro=Faça login para finalizar sua compra." class="btn btn-dark w-100 rounded-pill fw-bold py-3 shadow-sm text-uppercase">
+                                Fazer Login para Pagar
+                            </a>
+                        <% } %>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal fade" id="modalLimparCarrinho" tabindex="-1" aria-labelledby="modalLimparCarrinhoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fw-bold text-danger" id="modalLimparCarrinhoLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Esvaziar Carrinho
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="bg-danger-subtle text-danger rounded-circle d-inline-flex justify-content-center align-items-center mb-3" style="width: 70px; height: 70px;">
+                    <i class="fas fa-trash-alt fa-2x"></i>
+                </div>
+                <p class="fs-5 mb-0 text-dark">Tem a certeza que deseja remover <strong>todos os itens</strong> do seu carrinho?</p>
+                <p class="text-muted small mt-2">Esta ação não pode ser desfeita.</p>
+            </div>
+            <div class="modal-footer border-top-0 d-flex justify-content-center pb-4">
+                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold shadow-sm" data-bs-dismiss="modal">Cancelar</button>
+                <form action="/carrinho/limpar" method="POST" class="m-0">
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm">Sim, Esvaziar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function atualizarTotalDinâmico() {
+        let total = 0;
+        let selecionados = 0;
+        
+        document.querySelectorAll('.item-checkbox:checked').forEach(checkbox => {
+            total += parseFloat(checkbox.getAttribute('data-subtotal'));
+            selecionados++;
+        });
+
+        document.getElementById('valor-total-exibicao').innerText = total.toFixed(2);
+
+        const btnFinalizar = document.getElementById('btn-finalizar');
+        if (btnFinalizar) {
+            btnFinalizar.disabled = (selecionados === 0);
+        }
+    }
+</script>

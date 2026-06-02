@@ -1,54 +1,38 @@
 const pool = require('../config/database');
 
 class PedidoRepository {
-    async criarPedido(usuarioId, enderecoId, itens) {
+    async criarPedido(usuarioId, enderecoId, valorTotal, itensComprados) {
         const client = await pool.connect();
-
         try {
-            await client.query('BEGIN');
+            await client.query('BEGIN'); // 🚀 INICIA A TRANSAÇÃO SEGURA
 
-            // Calcula o valor total do pedido com base no itens
-            let valorTotal = 0;
-            for (const item of itens) {
-                valorTotal += (item.quantidade * item.preco_unitario);
-            }
-
+            // 1. Cria o Pedido (Já entra como 'pago' para a nossa simulação)
             const sqlPedido = `
                 INSERT INTO pedidos (usuario_id, endereco_id, valor_total, status)
-                VALUES ($1, $2, $3, 'pendente')
-                RETURNING id, valor_total, status, data_criacao;
+                VALUES ($1, $2, $3, 'pago') RETURNING id;
             `;
+            const { rows: resPedido } = await client.query(sqlPedido, [usuarioId, enderecoId, valorTotal]);
+            const pedidoId = resPedido[0].id;
 
-            const { rows: rowsPedido } = await client.query(sqlPedido, [usuarioId, enderecoId || null, valorTotal]);
-            const pedidoId = rowsPedido[0];
+            // 2. Insere os itens e remove do carrinho
+            const sqlItem = `INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario) VALUES ($1, $2, $3, $4);`;
+            const sqlLimparCarrinho = `DELETE FROM carrinho_itens WHERE carrinho_id = (SELECT id FROM carrinhos WHERE usuario_id = $1) AND produto_id = $2;`;
 
-            const sqlItens = `
-                INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario)
-                VALUES ($1, $2, $3, $4)
-                RETURNING id, produto_id, quantidade, preco_unitario;
-            `;
-
-            const itensInseridos = [];
-            for (const item of itens) {
-                const { rows: rowsItem } = await client.query(sqlItens, [
-                    pedidoId.id,
-                    item.produto_id,
-                    item.quantidade,
-                    item.preco_unitario
-                ]);
-                itensInseridos.push(rowsItem[0]);
+            for (let item of itensComprados) {
+                // Insere no histórico de compras
+                await client.query(sqlItem, [pedidoId, item.produto_id, item.quantidade, item.preco]);
+                // Remove aquele item específico do carrinho
+                await client.query(sqlLimparCarrinho, [usuarioId, item.produto_id]);
             }
 
-            await client.query('COMMIT');
-
-            // Retorna o pedido completo
-            return { ...novoPedido, itens: itensInseridos };
-        } catch (error) {
-            // Se algo falhou, reverte tudo
-            await client.query('ROLLBACK');
-            throw error;
+            await client.query('COMMIT'); // 🚀 GUARDA TUDO NO BANCO
+            
+            // 💡 CORREÇÃO: O Controller está à espera que retorne APENAS o ID do pedido!
+            return pedidoId; 
+        } catch (erro) {
+            await client.query('ROLLBACK'); // 🚨 SE FALHAR ALGO, DESFAZ A COMPRA
+            throw erro;
         } finally {
-            // Libera a ligação para o pool para não sobrecarregar o servidor
             client.release();
         }
     }
@@ -98,6 +82,27 @@ class PedidoRepository {
             WHERE status = 'pago';
         `);
         return parseFloat(rows[0].total);
+    }
+
+    async buscarRecibo(pedidoId, usuarioId) {
+        // Busca os dados mestre do pedido e do endereço associado
+        const sqlPedido = `
+            SELECT p.*, e.logradouro, e.numero, e.bairro, e.cidade, e.estado, e.cep, e.complemento
+            FROM pedidos p JOIN enderecos e ON p.endereco_id = e.id
+            WHERE p.id = $1 AND p.usuario_id = $2;
+        `;
+        const resPedido = await pool.query(sqlPedido, [pedidoId, usuarioId]);
+        if (resPedido.rows.length === 0) return null;
+
+        // Busca os produtos deste pedido
+        const sqlItens = `
+            SELECT ip.quantidade, ip.preco_unitario, prod.nome, prod.url_imagem as imagem
+            FROM itens_pedido ip JOIN produtos prod ON ip.produto_id = prod.id
+            WHERE ip.pedido_id = $1;
+        `;
+        const resItens = await pool.query(sqlItens, [pedidoId]);
+
+        return { pedido: resPedido.rows[0], itens: resItens.rows };
     }
 }
 

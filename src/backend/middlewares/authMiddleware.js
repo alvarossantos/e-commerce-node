@@ -50,3 +50,17 @@ exports.verificarLogado = (req, res, next) => {
         return res.redirect('/login?erro=Sessão expirada. Faça login novamente.');
     }
 }
+
+exports.verificarLogadoOpcional = (req, res, next) => {
+    const token = req.cookies.token;
+    if (token) {
+        try {
+            // Se tem token válido, injeato os dados
+            req.usuarioLogado = jwt.verify(token, SECRET);
+        } catch (erro) {
+            // Se for velho ou inválido, limpa
+            res.clearCookie('token');
+        }
+    }
+    next();
+};

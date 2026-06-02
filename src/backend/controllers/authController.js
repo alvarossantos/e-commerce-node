@@ -32,6 +32,16 @@ exports.fazerLogin = async (req, res) => {
 
         res.cookie('token', token, { httpOnly: true, secure: false });
 
+        if (req.cookies.carrinho_visitante) {
+            const CarrinhoRepository = require('../repositories/carrinhoRepository');
+            const carrinhoVisitante = JSON.parse(req.cookies.carrinho_visitante);
+        
+            for (let item of carrinhoVisitante) {
+                await CarrinhoRepository.adicionarItem(usuario.id, item.produtoId, item.quantidade);
+            }
+            res.clearCookie('carrinho_visitante');
+        }
+
         if (usuario.is_admin) {
             res.redirect('/admin/dashboard');
         } else {

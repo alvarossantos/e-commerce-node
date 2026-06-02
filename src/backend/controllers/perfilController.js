@@ -75,7 +75,7 @@ exports.atualizarFoto = async (req, res) => {
         if (req.file) {
             // Vamos forçar que a extensão seja sempre .webp para máxima compressão
             const nomeArquivo = `avatar_${usuarioId}_${Date.now()}.webp`;
-            const caminhoDestinoAbsoluto = path.join(process.cwd(), 'src', 'frontend', 'public', 'img', 'usuarios');
+            const caminhoDestinoAbsoluto = path.join(process.cwd(), 'src', 'frontend', 'static', 'img', 'usuarios');
             
             // Garante que a pasta existe
             if (!fs.existsSync(caminhoDestinoAbsoluto)) {
@@ -90,7 +90,7 @@ exports.atualizarFoto = async (req, res) => {
                 .webp({ quality: 80 })              // Converte para WEBP com 80% de qualidade
                 .toFile(caminhoCompleto);           // Salva fisicamente no disco
 
-            caminhoFoto = `/static/img/usuarios/${nomeArquivo}`;
+            caminhoFoto = `/img/usuarios/${nomeArquivo}`;
         }
 
         if (!caminhoFoto) {
