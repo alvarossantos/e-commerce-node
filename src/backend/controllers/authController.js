@@ -94,7 +94,7 @@ exports.fazerCadastro = async (req, res) => {
             cpf: cpfLimpo,
             data_nascimento: data_nascimento,
             telefone: null,
-            url_foto: '/static/img/usuarios/default.png',
+            url_foto: '/img/usuarios/default.png',
             ativo: true,
             is_admin: false
         };
