@@ -1,0 +1,32 @@
+# Dependências — instaladas dentro do container
+node_modules/
+npm-debug.log*
+
+# Variáveis de ambiente — nunca enviar para a imagem!
+.env
+.env.*
+!.env.example
+
+# Arquivos de desenvolvimento
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testes — não precisam ir para produção
+tests/
+jest.config.js
+coverage/
+
+# Git
+.git/
+.gitignore
+
+# Documentação (opcional manter, mas reduz tamanho)
+README.md
+CHANGELOG.md
+docs/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

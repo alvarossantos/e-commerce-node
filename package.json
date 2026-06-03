@@ -1,15 +1,17 @@
 {
   "name": "e-commerce-node",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "1.2.0",
+  "description": "NexStore — E-commerce Full-Stack com Node.js e PostgreSQL",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js --ignore 'src/frontend/static/img/*'"
+    "dev": "nodemon server.js --ignore 'src/frontend/static/img/*'",
+    "test": "jest --forceExit",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --forceExit"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["ecommerce", "nodejs", "express", "postgresql"],
+  "author": "Álvaro Santos",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
@@ -27,6 +29,8 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.1.0"
   }
 }

@@ -1,0 +1,64 @@
+# ════════════════════════════════════════════════════════════
+#  docker-compose.yml — NexStore
+#  Orquestra a aplicação Node.js + PostgreSQL com um comando
+# ════════════════════════════════════════════════════════════
+#
+#  USO:
+#    Subir tudo:    docker compose up -d
+#    Ver logs:      docker compose logs -f app
+#    Derrubar:      docker compose down
+#    Reset banco:   docker compose down -v   (apaga os volumes!)
+
+services:
+
+  # ── Banco de dados PostgreSQL ────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: nexstore_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-nexstore}
+      POSTGRES_PASSWORD: ${DB_PASS:-nexstore123}
+      POSTGRES_DB: ${DB_NAME:-ecommerce_db}
+    ports:
+      - "5432:5432"          # expõe para ferramentas como DBeaver / pgAdmin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data   # dados persistem entre reinicializações
+      - ./database.sql:/docker-entrypoint-initdb.d/init.sql  # cria tabelas na primeira vez
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-nexstore} -d ${DB_NAME:-ecommerce_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Aplicação Node.js ────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexstore_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy   # só sobe após o banco estar pronto
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db                   # nome do serviço acima
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-nexstore}
+      DB_PASS: ${DB_PASS:-nexstore123}
+      DB_NAME: ${DB_NAME:-ecommerce_db}
+      JWT_SECRET: ${JWT_SECRET:-troque_esta_chave_em_producao}
+    volumes:
+      # Monta a pasta de imagens para que uploads persistam
+      - ./src/frontend/static/img:/app/src/frontend/static/img
+    # Para desenvolvimento: hot-reload com nodemon
+    # command: ["npx", "nodemon", "server.js"]
+
+# ── Volume nomeado ───────────────────────────────────────────
+volumes:
+  postgres_data:
+    name: nexstore_postgres_data

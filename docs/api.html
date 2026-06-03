@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexStore — Documentação de Rotas</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2d3148;
+    --accent: #7c6dfa;
+    --accent2: #a78bfa;
+    --text: #e2e4f0;
+    --muted: #8890b0;
+    --get: #22c55e;
+    --post: #3b82f6;
+    --put: #f59e0b;
+    --delete: #ef4444;
+    --patch: #ec4899;
+    --get-bg: rgba(34,197,94,0.12);
+    --post-bg: rgba(59,130,246,0.12);
+    --put-bg: rgba(245,158,11,0.12);
+    --delete-bg: rgba(239,68,68,0.12);
+    --radius: 10px;
+    --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 15px; line-height: 1.6; }
+  a { color: var(--accent2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 24px 0; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; }
+  .main { margin-left: 260px; padding: 40px 48px; max-width: 960px; }
+
+  /* ── Sidebar ── */
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo h1 { font-size: 20px; font-weight: 700; color: var(--accent2); }
+  .sidebar-logo span { font-size: 12px; color: var(--muted); }
+  .sidebar-nav { padding: 16px 0; }
+  .sidebar-section { padding: 8px 20px 4px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 7px 20px; font-size: 13px; color: var(--muted); cursor: pointer; transition: background .15s, color .15s; border-left: 3px solid transparent; }
+  .sidebar-link:hover { background: var(--surface2); color: var(--text); }
+  .sidebar-link.active { background: var(--surface2); color: var(--accent2); border-left-color: var(--accent); }
+  .method-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-get { background: var(--get); }
+  .dot-post { background: var(--post); }
+  .dot-put { background: var(--put); }
+  .dot-delete { background: var(--delete); }
+
+  /* ── Header ── */
+  .page-header { margin-bottom: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+  .page-header h1 { font-size: 32px; font-weight: 800; background: linear-gradient(135deg, var(--accent2), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .page-header p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+  .badge-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .badge { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid; }
+  .badge-purple { background: rgba(124,109,250,.15); border-color: var(--accent); color: var(--accent2); }
+  .badge-green { background: rgba(34,197,94,.15); border-color: var(--get); color: var(--get); }
+  .badge-blue { background: rgba(59,130,246,.15); border-color: var(--post); color: #60a5fa; }
+
+  /* ── Seções ── */
+  .section { margin-bottom: 56px; scroll-margin-top: 24px; }
+  .section-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+  .section-title-icon { font-size: 20px; }
+  .section-desc { color: var(--muted); margin-bottom: 24px; }
+
+  /* ── Endpoint card ── */
+  .endpoint { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; transition: border-color .2s; }
+  .endpoint:hover { border-color: var(--accent); }
+  .endpoint-header { display: flex; align-items: center; gap: 16px; padding: 16px 20px; cursor: pointer; user-select: none; }
+  .method-badge { font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px; min-width: 64px; text-align: center; }
+  .method-GET { background: var(--get-bg); color: var(--get); border: 1px solid rgba(34,197,94,.3); }
+  .method-POST { background: var(--post-bg); color: #60a5fa; border: 1px solid rgba(59,130,246,.3); }
+  .method-PUT { background: var(--put-bg); color: var(--put); border: 1px solid rgba(245,158,11,.3); }
+  .method-DELETE { background: var(--delete-bg); color: var(--delete); border: 1px solid rgba(239,68,68,.3); }
+  .endpoint-path { font-family: var(--mono); font-size: 14px; color: var(--text); flex: 1; }
+  .endpoint-summary { color: var(--muted); font-size: 13px; }
+  .lock-icon { font-size: 13px; color: var(--muted); }
+
+  .endpoint-body { padding: 0 20px 20px; border-top: 1px solid var(--border); display: none; }
+  .endpoint.open .endpoint-body { display: block; }
+  .endpoint-body > * { margin-top: 16px; }
+
+  /* ── Subtabelas ── */
+  .params-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-weight: 600; padding: 6px 10px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .param-name { font-family: var(--mono); color: var(--accent2); }
+  .param-type { color: var(--put); font-size: 12px; }
+  .param-req { color: var(--delete); font-size: 11px; font-weight: 700; }
+  .param-opt { color: var(--muted); font-size: 11px; }
+
+  /* ── Código ── */
+  pre { background: #0a0c14; border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.6; }
+  .response-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .response-item { background: var(--surface2); border-radius: 8px; padding: 14px; }
+  .response-code { font-family: var(--mono); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .r200 { color: var(--get); }
+  .r302 { color: #a78bfa; }
+  .r400 { color: var(--put); }
+  .r401 { color: #f97316; }
+  .r403 { color: var(--delete); }
+  .r404 { color: var(--delete); }
+  .response-desc { font-size: 12px; color: var(--muted); }
+
+  /* ── Auth notice ── */
+  .auth-notice { background: rgba(124,109,250,.1); border: 1px solid rgba(124,109,250,.3); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--accent2); display: flex; gap: 10px; align-items: flex-start; }
+
+  /* ── Modelo de dados ── */
+  .model-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .model-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .model-name { font-weight: 700; font-size: 15px; color: var(--accent2); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .model-field { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .model-field:last-child { border-bottom: none; }
+  .field-name { font-family: var(--mono); color: var(--text); }
+  .field-type { color: var(--muted); font-size: 12px; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 24px 16px; }
+    .response-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ════ SIDEBAR ════ -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>🛒 NexStore</h1>
+    <span>Documentação de Rotas v1.0</span>
+  </div>
+  <div class="sidebar-nav">
+    <div class="sidebar-section">Geral</div>
+    <a class="sidebar-link active" href="#intro">📖 Introdução</a>
+    <a class="sidebar-link" href="#auth-section">🔐 Autenticação</a>
+
+    <div class="sidebar-section">Loja</div>
+    <a class="sidebar-link" href="#catalogo"><span class="method-dot dot-get"></span>Catálogo</a>
+    <a class="sidebar-link" href="#carrinho"><span class="method-dot dot-post"></span>Carrinho</a>
+    <a class="sidebar-link" href="#checkout"><span class="method-dot dot-post"></span>Checkout</a>
+    <a class="sidebar-link" href="#pedidos"><span class="method-dot dot-get"></span>Pedidos</a>
+
+    <div class="sidebar-section">Admin</div>
+    <a class="sidebar-link" href="#admin-dashboard"><span class="method-dot dot-get"></span>Dashboard</a>
+    <a class="sidebar-link" href="#admin-produtos"><span class="method-dot dot-post"></span>Produtos</a>
+    <a class="sidebar-link" href="#admin-pedidos"><span class="method-dot dot-put"></span>Pedidos</a>
+
+    <div class="sidebar-section">Referência</div>
+    <a class="sidebar-link" href="#modelos">📦 Modelos de Dados</a>
+  </div>
+</nav>
+
+<!-- ════ CONTEÚDO ════ -->
+<main class="main">
+
+  <!-- ── Introdução ── -->
+  <section id="intro" class="page-header">
+    <h1>NexStore API Docs</h1>
+    <p>Documentação completa das rotas da aplicação <strong>NexStore</strong> — e-commerce Full-Stack construído com Node.js, Express e PostgreSQL.</p>
+    <div class="badge-row">
+      <span class="badge badge-purple">Node.js + Express 5</span>
+      <span class="badge badge-green">PostgreSQL 16</span>
+      <span class="badge badge-blue">JWT + Bcrypt</span>
+    </div>
+    <p style="margin-top:20px; color:var(--muted); font-size:13px;">
+      <strong style="color:var(--accent2)">Base URL:</strong> <code style="font-family:var(--mono); color:var(--text)">http://localhost:3000</code><br>
+      As rotas retornam <strong>HTML renderizado pelo EJS</strong> (não JSON), pois é uma aplicação MVC Server-Side Rendering (SSR).<br>
+      Autenticação via <strong>cookie HttpOnly</strong> contendo JWT — enviado automaticamente pelo navegador.
+    </p>
+  </section>
+
+  <!-- ── Autenticação ── -->
+  <section id="auth-section" class="section">
+    <div class="section-title"><span class="section-title-icon">🔐</span> Autenticação</div>
+    <p class="section-desc">Rotas públicas de registro, login e logout. O JWT é armazenado em cookie HttpOnly após login.</p>
+
+    <!-- GET /auth/login -->
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/auth/login</span>
+        <span class="endpoint-summary">Exibe o formulário de login</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Renderiza a página de login</div></div>
+          <div class="response-item"><div class="response-code r302">302 Redirect</div><div class="response-desc">Se já logado, redireciona para /</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST /auth/login -->
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/auth/login</span>
+        <span class="endpoint-summary">Autentica o usuário e emite JWT</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">email</td><td class="param-type">string</td><td class="param-req">✓</td><td>E-mail cadastrado</td></tr>
+          <tr><td class="param-name">senha</td><td class="param-type">string</td><td class="param-req">✓</td><td>Senha do usuário</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /</div><div class="response-desc">Login bem-sucedido; cookie JWT definido</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /auth/login</div><div class="response-desc">Credenciais inválidas ou conta inativa</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST /auth/register -->
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/auth/register</span>
+        <span class="endpoint-summary">Cria novo usuário</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">nome</td><td class="param-type">string</td><td class="param-req">✓</td><td>Nome completo</td></tr>
+          <tr><td class="param-name">email</td><td class="param-type">string</td><td class="param-req">✓</td><td>E-mail único</td></tr>
+          <tr><td class="param-name">senha</td><td class="param-type">string</td><td class="param-req">✓</td><td>Senha (mínimo 8 caracteres)</td></tr>
+          <tr><td class="param-name">cpf</td><td class="param-type">string (11 dígitos)</td><td class="param-req">✓</td><td>CPF sem formatação</td></tr>
+          <tr><td class="param-name">data_nascimento</td><td class="param-type">date (YYYY-MM-DD)</td><td class="param-req">✓</td><td>Data de nascimento</td></tr>
+          <tr><td class="param-name">telefone</td><td class="param-type">string</td><td class="param-opt">opcional</td><td>Ex: 11999999999</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /</div><div class="response-desc">Cadastro realizado, já autenticado</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /auth/register</div><div class="response-desc">E-mail ou CPF já cadastrado</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GET /auth/logout -->
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/auth/logout</span>
+        <span class="endpoint-summary">Encerra a sessão do usuário</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /auth/login</div><div class="response-desc">Cookie JWT expirado, sessão encerrada</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Catálogo ── -->
+  <section id="catalogo" class="section">
+    <div class="section-title"><span class="section-title-icon">🛍️</span> Catálogo de Produtos</div>
+    <p class="section-desc">Rotas públicas — acessíveis sem autenticação.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/</span>
+        <span class="endpoint-summary">Página inicial — catálogo completo</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Query Parameters (opcionais)</div>
+        <table><thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">q</td><td class="param-type">string</td><td>Termo de busca por nome ou categoria</td></tr>
+          <tr><td class="param-name">categoria</td><td class="param-type">string</td><td>Filtrar por categoria (ex: Hardware, Periféricos)</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Lista de produtos com estoque</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/produtos/:id</span>
+        <span class="endpoint-summary">Detalhe do produto + avaliações</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Path Parameters</div>
+        <table><thead><tr><th>Parâmetro</th><th>Tipo</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">id</td><td class="param-type">integer</td><td>ID do produto</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Detalhe do produto, estoque e avaliações</div></div>
+          <div class="response-item"><div class="response-code r404">404 / Redirect</div><div class="response-desc">Produto não encontrado</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Carrinho ── -->
+  <section id="carrinho" class="section">
+    <div class="section-title"><span class="section-title-icon">🛒</span> Carrinho de Compras</div>
+    <p class="section-desc">Carrinho <strong>híbrido</strong>: cookies para visitantes, banco de dados para usuários logados. O merge ocorre automaticamente no login.</p>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/carrinho</span>
+        <span class="endpoint-summary">Visualizar itens do carrinho</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Página do carrinho com subtotal</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/carrinho/adicionar</span>
+        <span class="endpoint-summary">Adicionar produto ao carrinho</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">produto_id</td><td class="param-type">integer</td><td class="param-req">✓</td><td>ID do produto a adicionar</td></tr>
+          <tr><td class="param-name">quantidade</td><td class="param-type">integer</td><td class="param-req">✓</td><td>Quantidade desejada (≥ 1)</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /carrinho</div><div class="response-desc">Item adicionado com sucesso</div></div>
+          <div class="response-item"><div class="response-code r302">302 ← erro</div><div class="response-desc">Produto sem estoque ou não encontrado</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/carrinho/remover</span>
+        <span class="endpoint-summary">Remover produto do carrinho</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">produto_id</td><td class="param-type">integer</td><td class="param-req">✓</td><td>ID do produto a remover</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /carrinho</div><div class="response-desc">Item removido</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Checkout ── -->
+  <section id="checkout" class="section">
+    <div class="section-title"><span class="section-title-icon">💳</span> Checkout</div>
+    <div class="auth-notice">🔒 Todas as rotas de checkout exigem autenticação (JWT válido).</div>
+
+    <div class="endpoint" style="margin-top:16px">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/checkout</span>
+        <span class="endpoint-summary">Página de finalização da compra</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Formulário de endereço e resumo do pedido</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /auth/login</div><div class="response-desc">Usuário não autenticado</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /carrinho</div><div class="response-desc">Carrinho vazio</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/checkout</span>
+        <span class="endpoint-summary">Confirmar pedido e gerar recibo</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">endereco_id</td><td class="param-type">integer</td><td class="param-req">✓</td><td>ID do endereço de entrega</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /pedidos/:id</div><div class="response-desc">Pedido criado, estoque baixado via trigger</div></div>
+          <div class="response-item"><div class="response-code r302">302 ← erro</div><div class="response-desc">Produto sem estoque ou erro inesperado</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pedidos ── -->
+  <section id="pedidos" class="section">
+    <div class="section-title"><span class="section-title-icon">📦</span> Pedidos</div>
+    <div class="auth-notice">🔒 Usuário autenticado. Só visualiza os próprios pedidos.</div>
+
+    <div class="endpoint" style="margin-top:16px">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/pedidos</span>
+        <span class="endpoint-summary">Histórico de pedidos do usuário</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Lista de pedidos com status e valor total</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /auth/login</div><div class="response-desc">Usuário não autenticado</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/pedidos/:id</span>
+        <span class="endpoint-summary">Detalhe do pedido / recibo</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Itens, endereço e status do pedido</div></div>
+          <div class="response-item"><div class="response-code r403">403 Forbidden</div><div class="response-desc">Pedido pertence a outro usuário</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Admin Dashboard ── -->
+  <section id="admin-dashboard" class="section">
+    <div class="section-title"><span class="section-title-icon">📊</span> Admin — Dashboard</div>
+    <div class="auth-notice">🔒 Requer <strong>is_admin = true</strong> no JWT. Acesso bloqueado para usuários comuns.</div>
+
+    <div class="endpoint" style="margin-top:16px">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/admin/dashboard</span>
+        <span class="endpoint-summary">Faturamento, vendas e alertas de estoque</span>
+      </div>
+      <div class="endpoint-body">
+        <p style="color:var(--muted); font-size:13px;">Exibe métricas analíticas: total de faturamento, número de pedidos por status e produtos com estoque abaixo do mínimo.</p>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Dashboard analítico renderizado</div></div>
+          <div class="response-item"><div class="response-code r302">302 → /auth/login</div><div class="response-desc">Não é admin</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Admin Produtos ── -->
+  <section id="admin-produtos" class="section">
+    <div class="section-title"><span class="section-title-icon">📦</span> Admin — Gestão de Produtos</div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/admin/produtos</span>
+        <span class="endpoint-summary">Listar todos os produtos com estoque</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Tabela de produtos com SKU, preço e estoque</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-POST">POST</span>
+        <span class="endpoint-path">/admin/produtos</span>
+        <span class="endpoint-summary">Cadastrar novo produto</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (multipart/form-data — aceita imagem)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Obrig.</th><th>Descrição</th></tr></thead><tbody>
+          <tr><td class="param-name">nome</td><td class="param-type">string</td><td class="param-req">✓</td><td>Nome do produto</td></tr>
+          <tr><td class="param-name">sku</td><td class="param-type">string</td><td class="param-opt">opcional</td><td>Código de estoque único</td></tr>
+          <tr><td class="param-name">preco</td><td class="param-type">decimal</td><td class="param-req">✓</td><td>Preço (≥ 0)</td></tr>
+          <tr><td class="param-name">descricao</td><td class="param-type">text</td><td class="param-opt">opcional</td><td>Descrição detalhada</td></tr>
+          <tr><td class="param-name">categoria</td><td class="param-type">string</td><td class="param-opt">opcional</td><td>Ex: Hardware, Periféricos</td></tr>
+          <tr><td class="param-name">quantidade</td><td class="param-type">integer</td><td class="param-req">✓</td><td>Estoque inicial</td></tr>
+          <tr><td class="param-name">estoque_minimo</td><td class="param-type">integer</td><td class="param-opt">opcional</td><td>Gatilho de alerta (padrão: 0)</td></tr>
+          <tr><td class="param-name">imagem</td><td class="param-type">file (jpg/png/webp)</td><td class="param-opt">opcional</td><td>Foto do produto (processada por Sharp)</td></tr>
+        </tbody></table>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /admin/produtos</div><div class="response-desc">Produto e estoque cadastrados</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-DELETE">DELETE</span>
+        <span class="endpoint-path">/admin/produtos/:id</span>
+        <span class="endpoint-summary">Remover produto do catálogo</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /admin/produtos</div><div class="response-desc">Produto e estoque excluídos (CASCADE)</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Admin Pedidos ── -->
+  <section id="admin-pedidos" class="section">
+    <div class="section-title"><span class="section-title-icon">🚚</span> Admin — Gestão de Pedidos</div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-GET">GET</span>
+        <span class="endpoint-path">/admin/pedidos</span>
+        <span class="endpoint-summary">Listar todos os pedidos</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r200">200 OK</div><div class="response-desc">Lista com cliente, valor e status de cada pedido</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="toggle(this)">
+        <span class="method-badge method-PUT">PUT</span>
+        <span class="endpoint-path">/admin/pedidos/:id/status</span>
+        <span class="endpoint-summary">Atualizar status do pedido</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="params-title">Body (application/x-www-form-urlencoded)</div>
+        <table><thead><tr><th>Campo</th><th>Tipo</th><th>Valores aceitos</th></tr></thead><tbody>
+          <tr><td class="param-name">status</td><td class="param-type">string</td><td><code>pendente · em_analise · pago · enviado · entregue · cancelado</code></td></tr>
+        </tbody></table>
+        <p style="color:var(--muted); font-size:13px; margin-top:10px;">⚠️ Se o status for alterado para <strong>cancelado</strong>, um trigger PostgreSQL devolve automaticamente o estoque dos itens.</p>
+        <div class="response-grid">
+          <div class="response-item"><div class="response-code r302">302 → /admin/pedidos</div><div class="response-desc">Status atualizado</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Modelos de Dados ── -->
+  <section id="modelos" class="section">
+    <div class="section-title"><span class="section-title-icon">📋</span> Modelos de Dados</div>
+    <p class="section-desc">Entidades principais do banco PostgreSQL.</p>
+    <div class="model-grid">
+
+      <div class="model-card">
+        <div class="model-name">👤 usuarios</div>
+        <div class="model-field"><span class="field-name">id</span><span class="field-type">SERIAL PK</span></div>
+        <div class="model-field"><span class="field-name">nome</span><span class="field-type">VARCHAR(100)</span></div>
+        <div class="model-field"><span class="field-name">email</span><span class="field-type">VARCHAR UNIQUE</span></div>
+        <div class="model-field"><span class="field-name">senha_hash</span><span class="field-type">TEXT (bcrypt)</span></div>
+        <div class="model-field"><span class="field-name">cpf</span><span class="field-type">VARCHAR UNIQUE</span></div>
+        <div class="model-field"><span class="field-name">is_admin</span><span class="field-type">BOOLEAN</span></div>
+        <div class="model-field"><span class="field-name">ativo</span><span class="field-type">BOOLEAN</span></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">📦 produtos</div>
+        <div class="model-field"><span class="field-name">id</span><span class="field-type">SERIAL PK</span></div>
+        <div class="model-field"><span class="field-name">nome</span><span class="field-type">VARCHAR(150)</span></div>
+        <div class="model-field"><span class="field-name">sku</span><span class="field-type">VARCHAR UNIQUE</span></div>
+        <div class="model-field"><span class="field-name">preco</span><span class="field-type">DECIMAL ≥ 0</span></div>
+        <div class="model-field"><span class="field-name">categoria</span><span class="field-type">VARCHAR(100)</span></div>
+        <div class="model-field"><span class="field-name">url_imagem</span><span class="field-type">TEXT</span></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">📊 estoque</div>
+        <div class="model-field"><span class="field-name">produto_id</span><span class="field-type">FK → produtos</span></div>
+        <div class="model-field"><span class="field-name">quantidade</span><span class="field-type">INTEGER ≥ 0</span></div>
+        <div class="model-field"><span class="field-name">estoque_minimo</span><span class="field-type">INTEGER</span></div>
+        <div class="model-field"><span class="field-name">ultima_atualizacao</span><span class="field-type">TIMESTAMP</span></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">🧾 pedidos</div>
+        <div class="model-field"><span class="field-name">id</span><span class="field-type">SERIAL PK</span></div>
+        <div class="model-field"><span class="field-name">usuario_id</span><span class="field-type">FK → usuarios</span></div>
+        <div class="model-field"><span class="field-name">status</span><span class="field-type">ENUM (6 valores)</span></div>
+        <div class="model-field"><span class="field-name">valor_total</span><span class="field-type">DECIMAL</span></div>
+        <div class="model-field"><span class="field-name">endereco_id</span><span class="field-type">FK → enderecos</span></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">🛒 carrinhos</div>
+        <div class="model-field"><span class="field-name">id</span><span class="field-type">SERIAL PK</span></div>
+        <div class="model-field"><span class="field-name">usuario_id</span><span class="field-type">FK UNIQUE</span></div>
+        <div class="model-field"><span class="field-name">criado_em</span><span class="field-type">TIMESTAMP</span></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-name">⭐ avaliacoes</div>
+        <div class="model-field"><span class="field-name">produto_id</span><span class="field-type">FK → produtos</span></div>
+        <div class="model-field"><span class="field-name">usuario_id</span><span class="field-type">FK → usuarios</span></div>
+        <div class="model-field"><span class="field-name">nota</span><span class="field-type">INTEGER 1–5</span></div>
+        <div class="model-field"><span class="field-name">comentario</span><span class="field-type">TEXT</span></div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+</div>
+
+<script>
+  function toggle(header) {
+    const endpoint = header.parentElement;
+    endpoint.classList.toggle('open');
+  }
+  // Highlight active sidebar link on scroll
+  const sections = document.querySelectorAll('.section, .page-header');
+  const links = document.querySelectorAll('.sidebar-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>

@@ -71,7 +71,11 @@ app.get('/', async(req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
-    console.log(`Rodando em http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+    app.listen(PORT, () => {
+        console.log(`Servidor rodando na porta ${PORT}`);
+        console.log(`Rodando em http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
