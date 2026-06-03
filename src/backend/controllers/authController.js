@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 
-const SECRET = 'chave_super_secreta';
+const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
 
 exports.renderizarLogin = (req, res) => res.render('login', { layout: 'layout_cliente', erro: req.query.erro });
 exports.renderizarCadastro = (req, res) => res.render('cadastro', { layout: 'layout_cliente' });
