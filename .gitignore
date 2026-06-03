@@ -1,3 +1,25 @@
-.env
+# Dependências
 node_modules/
+
+# Variáveis de ambiente — NUNCA versionar!
+.env
+.env.*
+!.env.example
+
+# Editor
 .vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Cobertura de testes (gerada pelo Jest)
+coverage/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Uploads de usuários (não versionar arquivos binários)
+src/frontend/static/img/produtos/uploads/
