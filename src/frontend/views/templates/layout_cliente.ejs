@@ -3,68 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexStore</title>
+    <meta name="description" content="NexStore — Sua loja online de hardware, periféricos e acessórios de tecnologia. Encontre os melhores preços!">
+    <meta name="keywords" content="loja online, hardware, periféricos, tecnologia, computador, gamer, monitor">
+    <meta property="og:title" content="NexStore — Loja de Tecnologia">
+    <meta property="og:description" content="Os melhores preços em hardware, periféricos e acessórios.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <title>NexStore — Sua Loja de Tecnologia</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body { background-color: #f8f9fa; }
-        .navbar-brand { font-weight: 800; letter-spacing: -1px; }
-    </style>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm py-3">
+    <a href="#conteudo-principal" class="skip-link">Pular para o conteúdo principal</a>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm py-3" role="navigation" aria-label="Menu principal da loja">
         <div class="container">
-            <a class="navbar-brand fs-4" href="/"><i class="fas fa-gamepad text-primary me-2"></i>Nex<span class="text-primary">Store</span></a>
+            <a class="navbar-brand fs-4" href="/" aria-label="NexStore — Página Inicial"><i class="fas fa-gamepad text-primary me-2" aria-hidden="true"></i>Nex<span class="text-primary">Store</span></a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLoja">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLoja" aria-controls="navLoja" aria-expanded="false" aria-label="Abrir menu de navegação">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navLoja">
-                <form class="d-flex mx-auto w-50 my-2 my-lg-0" action="/" method="GET">
+                <form class="d-flex mx-auto w-50 my-2 my-lg-0" action="/" method="GET" role="search">
                     <div class="input-group">
-                        <input class="form-control border-0 shadow-none" type="search" name="busca" placeholder="O que você está procurando?" aria-label="Search" value="<%= typeof termoBusca !== 'undefined' ? termoBusca : '' %>">
-                        <button class="btn btn-primary px-4" type="submit"><i class="fas fa-search"></i></button>
+                        <input class="form-control border-0 shadow-none" type="search" name="busca" placeholder="O que você está procurando?" aria-label="Buscar produtos" value="<%= typeof termoBusca !== 'undefined' ? termoBusca : '' %>">
+                        <button class="btn btn-primary px-4" type="submit" aria-label="Buscar"><i class="fas fa-search" aria-hidden="true"></i></button>
                     </div>
                 </form>
 
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" role="menubar">
     
                     <% if (usuarioLogado) { %>
-                        <li class="nav-item dropdown me-3">
-                            <a class="nav-link dropdown-toggle fw-bold text-white d-flex align-items-center" href="#" id="menuUsuario" role="button" data-bs-toggle="dropdown">
-                                <img src="<%= usuarioLogado.url_foto %>" class="rounded-circle me-2 bg-white" style="width: 32px; height: 32px; object-fit: cover; padding: 2px;"> 
+                        <li class="nav-item dropdown me-3" role="none">
+                            <a class="nav-link dropdown-toggle fw-bold text-white d-flex align-items-center" href="#" id="menuUsuario" role="menuitem" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="<%= usuarioLogado.url_foto %>" class="rounded-circle me-2 bg-white" style="width: 32px; height: 32px; object-fit: cover; padding: 2px;" alt="Foto de perfil de <%= usuarioLogado.nome %>"> 
                                 Olá, <%= usuarioLogado.nome.split(' ')[0] %>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" role="menu">
                                 
                                 <% if (usuarioLogado.is_admin) { %>
-                                    <li>
-                                        <a class="dropdown-item fw-bold text-primary py-2" href="/admin/dashboard">
-                                            <i class="fas fa-shield-alt me-2"></i> Painel de Administração
+                                    <li role="none">
+                                        <a class="dropdown-item fw-bold text-primary py-2" href="/admin/dashboard" role="menuitem">
+                                            <i class="fas fa-shield-alt me-2" aria-hidden="true"></i> Painel de Administração
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                 <% } %>
                                 
-                                <li><a class="dropdown-item py-2" href="/pedidos/meus-pedidos"><i class="fas fa-box me-2"></i> Meus Pedidos</a></li>
-                                <li><a class="dropdown-item py-2" href="/perfil"><i class="fas fa-cog me-2"></i> Minha Conta</a></li>
+                                <li role="none"><a class="dropdown-item py-2" href="/pedidos/meus-pedidos" role="menuitem"><i class="fas fa-box me-2" aria-hidden="true"></i> Meus Pedidos</a></li>
+                                <li role="none"><a class="dropdown-item py-2" href="/perfil" role="menuitem"><i class="fas fa-cog me-2" aria-hidden="true"></i> Minha Conta</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item py-2 text-danger fw-bold" href="/logout"><i class="fas fa-sign-out-alt me-2"></i> Sair da Conta</a></li>
+                                <li role="none"><a class="dropdown-item py-2 text-danger fw-bold" href="/logout" role="menuitem"><i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i> Sair da Conta</a></li>
                             </ul>
                         </li>
                         
                     <% } else { %>
-                        <li class="nav-item me-3">
-                            <a class="nav-link fw-bold" href="/login"><i class="fas fa-user-circle fs-5 me-1"></i> Entrar / Cadastrar</a>
+                        <li class="nav-item me-3" role="none">
+                            <a class="nav-link fw-bold" href="/login" role="menuitem"><i class="fas fa-user-circle fs-5 me-1" aria-hidden="true"></i> Entrar / Cadastrar</a>
                         </li>
                     <% } %>
 
-                    <li class="nav-item">
-                        <a class="btn btn-outline-light position-relative rounded-pill px-3" href="/carrinho">
-                            <i class="fas fa-shopping-cart"></i> Carrinho
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary">
+                    <li class="nav-item" role="none">
+                        <a class="btn btn-outline-light position-relative rounded-pill px-3" href="/carrinho" role="menuitem" aria-label="Carrinho de compras">
+                            <i class="fas fa-shopping-cart" aria-hidden="true"></i> Carrinho
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" aria-label="<%= typeof totalItensCarrinho !== 'undefined' ? totalItensCarrinho : '0' %> itens no carrinho">
                                 <%= typeof totalItensCarrinho !== 'undefined' ? totalItensCarrinho : '0' %>
                             </span>
                         </a>
@@ -75,11 +81,36 @@
         </div>
     </nav>
 
-    <%- body %>
+    <main id="conteudo-principal" role="main">
+        <%- body %>
+    </main>
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <footer class="bg-dark text-white py-5 mt-5" role="contentinfo">
         <div class="container">
-            <p class="mb-0">© 2026 Álvaro Store. Todos os direitos reservados.</p>
+            <div class="row g-4">
+                <div class="col-lg-4 mb-3">
+                    <h5 class="footer-brand mb-3"><i class="fas fa-gamepad text-primary me-2" aria-hidden="true"></i>Nex<span class="text-primary">Store</span></h5>
+                    <p class="text-white-50 small mb-0">Sua loja online de hardware, periféricos e acessórios de tecnologia.</p>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <h6 class="fw-bold mb-3">Links Rápidos</h6>
+                    <div class="footer-links d-flex flex-column gap-2">
+                        <a href="/" class="small">Início</a>
+                        <a href="/perfil" class="small">Minha Conta</a>
+                        <a href="/pedidos/meus-pedidos" class="small">Meus Pedidos</a>
+                        <a href="/carrinho" class="small">Carrinho</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <h6 class="fw-bold mb-3">Contato</h6>
+                    <p class="text-white-50 small mb-1"><i class="fas fa-envelope me-2" aria-hidden="true"></i>contato@nexstore.com.br</p>
+                    <p class="text-white-50 small mb-0"><i class="fas fa-phone me-2" aria-hidden="true"></i>(31) 99999-0000</p>
+                </div>
+            </div>
+            <hr class="border-secondary my-4">
+            <div class="text-center">
+                <p class="mb-0 text-white-50 small">&copy; 2026 NexStore. Todos os direitos reservados.</p>
+            </div>
         </div>
     </footer>
 

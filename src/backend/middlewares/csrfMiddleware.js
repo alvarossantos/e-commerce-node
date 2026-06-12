@@ -1,0 +1,96 @@
+/**
+ * src/backend/middlewares/csrfMiddleware.js
+ *
+ * Middleware simples de CSRF para formulários HTML.
+ * Gera um token único por sessão e o torna disponível nos templates EJS.
+ * Os formulários devem incluir: <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+ */
+
+const crypto = require('crypto');
+
+const CSRF_SECRET = process.env.JWT_SECRET || 'csrf_secret_fallback';
+const TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hora
+
+/**
+ * Gera um token CSRF assinado
+ */
+function generateToken(sessionId) {
+    const payload = `${sessionId}:${Date.now()}`;
+    const signature = crypto.createHmac('sha256', CSRF_SECRET).update(payload).digest('hex');
+    return Buffer.from(`${payload}:${signature}`).toString('base64');
+}
+
+/**
+ * Valida um token CSRF
+ */
+function validateToken(token, sessionId) {
+    try {
+        const decoded = Buffer.from(token, 'base64').toString('utf8');
+        const parts = decoded.split(':');
+        if (parts.length !== 3) return false;
+
+        const [tokenSessionId, timestamp, signature] = parts;
+
+        // Verifica assinatura
+        const expectedPayload = `${tokenSessionId}:${timestamp}`;
+        const expectedSignature = crypto.createHmac('sha256', CSRF_SECRET).update(expectedPayload).digest('hex');
+        if (signature !== expectedSignature) return false;
+
+        // Verifica expiração
+        if (Date.now() - parseInt(timestamp) > TOKEN_EXPIRY) return false;
+
+        // Verifica se pertence à sessão atual
+        if (tokenSessionId !== sessionId) return false;
+
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Middleware que gera e injeta o token CSRF
+ */
+function csrfGenerate(req, res, next) {
+    // Gera um ID de sessão simples se não existir
+    if (!req.cookies.session_id) {
+        const sessionId = crypto.randomBytes(16).toString('hex');
+        res.cookie('session_id', sessionId, {
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000, // 24h
+            sameSite: 'strict'
+        });
+        req.cookies.session_id = sessionId;
+    }
+
+    const token = generateToken(req.cookies.session_id);
+    res.locals.csrfToken = token;
+    next();
+}
+
+/**
+ * Middleware que valida o token CSRF em requisições POST/PUT/PATCH/DELETE
+ */
+function csrfValidate(req, res, next) {
+    // Só valida em métodos que modificam dados
+    if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
+        return next();
+    }
+
+    const token = req.body._csrf || req.headers['x-csrf-token'];
+    const sessionId = req.cookies.session_id;
+
+    if (!token || !sessionId) {
+        return res.status(403).json({ mensagem: 'Token CSRF ausente.' });
+    }
+
+    if (!validateToken(token, sessionId)) {
+        return res.status(403).json({ mensagem: 'Token CSRF inválido ou expirado.' });
+    }
+
+    // Remove o _csrf do body para não poluir os controllers
+    delete req.body._csrf;
+    next();
+}
+
+module.exports = { csrfGenerate, csrfValidate };

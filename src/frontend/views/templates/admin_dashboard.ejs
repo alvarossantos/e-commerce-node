@@ -2,67 +2,67 @@
     
     <div class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3">
         <div>
-            <h2 class="fw-bold mb-0"><i class="fas fa-shield-alt text-primary me-2"></i> Painel de Controle</h2>
+            <h1 class="fw-bold mb-0 h2"><i class="fas fa-shield-alt text-primary me-2" aria-hidden="true"></i> Painel de Controle</h1>
             <p class="text-muted mt-1 mb-0">Visão geral e gestão da NexStore.</p>
         </div>
         <a href="/" class="btn btn-outline-secondary rounded-pill px-4">
-            <i class="fas fa-external-link-alt me-2"></i> Ver Loja
+            <i class="fas fa-external-link-alt me-2" aria-hidden="true"></i> Ver Loja
         </a>
     </div>
 
     <div class="row g-4 mb-5">
         
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-success border-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-success kpi-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted small text-uppercase fw-bold mb-1">Faturamento</p>
                         <h4 class="fw-bold text-dark mb-0">R$ <%= typeof faturamento !== 'undefined' ? parseFloat(faturamento).toFixed(2) : '0.00' %></h4>
                     </div>
-                    <div class="text-success rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #d1e7dd;">
-                        <i class="fas fa-dollar-sign fs-4"></i>
+                    <div class="text-success kpi-icon" style="background-color: #d1e7dd;">
+                        <i class="fas fa-dollar-sign fs-4" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-primary border-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-primary kpi-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted small text-uppercase fw-bold mb-1">Vendas Totais</p>
                         <h4 class="fw-bold text-dark mb-0"><%= typeof totalPedidos !== 'undefined' ? totalPedidos : '0' %></h4>
                     </div>
-                    <div class="text-primary rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #cfe2ff;">
-                        <i class="fas fa-shopping-bag fs-4"></i>
+                    <div class="text-primary kpi-icon" style="background-color: #cfe2ff;">
+                        <i class="fas fa-shopping-bag fs-4" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-info border-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-info kpi-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted small text-uppercase fw-bold mb-1">Usuários Registrados</p>
                         <h4 class="fw-bold text-dark mb-0"><%= typeof totalUsuarios !== 'undefined' ? totalUsuarios : '0' %></h4>
                     </div>
-                    <div class="text-info rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #cff4fc;">
-                        <i class="fas fa-users fs-4"></i>
+                    <div class="text-info kpi-icon" style="background-color: #cff4fc;">
+                        <i class="fas fa-users fs-4" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-danger border-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white p-3 border-start border-danger kpi-card">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted small text-uppercase fw-bold mb-1">Alertas de Estoque</p>
                         <h4 class="fw-bold text-dark mb-0"><%= typeof produtosEmAlerta !== 'undefined' ? produtosEmAlerta : '0' %></h4>
                     </div>
-                    <div class="text-danger rounded-circle d-flex justify-content-center align-items-center" style="width: 45px; height: 45px; background-color: #f8d7da;">
-                        <i class="fas fa-exclamation-triangle fs-4"></i>
+                    <div class="text-danger kpi-icon" style="background-color: #f8d7da;">
+                        <i class="fas fa-exclamation-triangle fs-4" aria-hidden="true"></i>
                     </div>
                 </div>
             </div>
@@ -73,12 +73,12 @@
     <div class="row mb-5">
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm rounded-4 h-100 bg-primary text-white overflow-hidden" style="position: relative;">
-                <i class="fas fa-box-open fa-6x position-absolute" style="opacity: 0.1; right: -10px; bottom: -20px;"></i>
+                <i class="fas fa-box-open fa-6x position-absolute" style="opacity: 0.1; right: -10px; bottom: -20px;" aria-hidden="true"></i>
                 <div class="card-body p-4 position-relative z-1">
-                    <h4 class="fw-bold mb-3">Produtos e Estoque</h4>
+                    <h2 class="fw-bold mb-3 h4">Produtos e Estoque</h2>
                     <p class="mb-4">Adicione novos itens, edite preços, altere fotos e controle o inventário.</p>
                     <a href="/admin/produtos" class="btn btn-light text-primary fw-bold rounded-pill px-4 shadow-sm">
-                        Gerir Produtos <i class="fas fa-arrow-right ms-2"></i>
+                        Gerir Produtos <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
@@ -86,12 +86,12 @@
 
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm rounded-4 h-100 bg-dark text-white overflow-hidden" style="position: relative;">
-                <i class="fas fa-shopping-bag fa-6x position-absolute" style="opacity: 0.1; right: -10px; bottom: -20px;"></i>
+                <i class="fas fa-shopping-bag fa-6x position-absolute" style="opacity: 0.1; right: -10px; bottom: -20px;" aria-hidden="true"></i>
                 <div class="card-body p-4 position-relative z-1">
-                    <h4 class="fw-bold mb-3">Vendas e Entregas</h4>
+                    <h2 class="fw-bold mb-3 h4">Vendas e Entregas</h2>
                     <p class="mb-4">Acompanhe os pedidos realizados, aprove pagamentos e efetue despachos.</p>
                     <a href="/admin/pedidos" class="btn btn-primary fw-bold rounded-pill px-4 shadow-sm">
-                        Gerir Pedidos <i class="fas fa-arrow-right ms-2"></i>
+                        Gerir Pedidos <i class="fas fa-arrow-right ms-2" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>

@@ -2,29 +2,30 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 p-4">
-                <h3 class="fw-bold mb-4">
+                <h1 class="fw-bold mb-4 h3">
                     <%= produto ? 'Editar Produto' : 'Cadastrar Novo Produto' %>
-                </h3>
+                </h1>
                 
                 <form action="<%= produto ? '/admin/produtos/' + produto.id + '?_method=PUT' : '/admin/produtos' %>" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Nome do Produto</label>
-                            <input type="text" name="nome" class="form-control" value="<%= produto ? produto.nome : '' %>" required>
+                            <label for="produto-nome" class="form-label small fw-bold text-muted">Nome do Produto</label>
+                            <input type="text" id="produto-nome" name="nome" class="form-control" value="<%= produto ? produto.nome : '' %>" required>
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">Preço (R$)</label>
-                            <input type="number" step="0.01" name="preco" class="form-control" value="<%= produto ? parseFloat(produto.preco).toFixed(2) : '' %>" required>
+                            <label for="produto-preco" class="form-label small fw-bold text-muted">Preço (R$)</label>
+                            <input type="number" step="0.01" id="produto-preco" name="preco" class="form-control" value="<%= produto ? parseFloat(produto.preco).toFixed(2) : '' %>" required inputmode="decimal">
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">Estoque Atual</label>
-                            <input type="number" step="1" min="0" name="quantidade" class="form-control" value="<%= typeof quantidade_estoque !== 'undefined' ? quantidade_estoque : '0' %>" required>
+                            <label for="produto-quantidade" class="form-label small fw-bold text-muted">Estoque Atual</label>
+                            <input type="number" step="1" min="0" id="produto-quantidade" name="quantidade" class="form-control" value="<%= typeof quantidade_estoque !== 'undefined' ? quantidade_estoque : '0' %>" required inputmode="numeric">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Categoria</label>
-                            <select name="categoria" class="form-select">
+                            <label for="produto-categoria" class="form-label small fw-bold text-muted">Categoria</label>
+                            <select id="produto-categoria" name="categoria" class="form-select">
                                 <option value="Hardware" <%= produto && produto.categoria === 'Hardware' ? 'selected' : '' %>>Hardware</option>
                                 <option value="Periféricos" <%= produto && produto.categoria === 'Periféricos' ? 'selected' : '' %>>Periféricos</option>
                                 <option value="Portáteis" <%= produto && produto.categoria === 'Portáteis' ? 'selected' : '' %>>Portáteis</option>
@@ -33,24 +34,24 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">SKU / Modelo</label>
-                            <input type="text" name="sku" class="form-control" value="<%= produto ? produto.sku : '' %>" required>
+                            <label for="produto-sku" class="form-label small fw-bold text-muted">SKU / Modelo</label>
+                            <input type="text" id="produto-sku" name="sku" class="form-control" value="<%= produto ? produto.sku : '' %>" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">URL da Imagem (Link Externo)</label>
-                            <input type="text" name="url_imagem" class="form-control" value="<%= produto ? produto.url_imagem : '' %>">
+                            <label for="produto-url" class="form-label small fw-bold">URL da Imagem (Link Externo)</label>
+                            <input type="url" id="produto-url" name="url_imagem" class="form-control" value="<%= produto ? produto.url_imagem : '' %>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold">Ou carregar do computador</label>
-                            <input type="file" name="foto_local" class="form-control">
+                            <label for="produto-foto" class="form-label small fw-bold">Ou carregar do computador</label>
+                            <input type="file" id="produto-foto" name="foto_local" class="form-control" accept="image/*">
                         </div>
                         <div class="col-12">
-                            <label class="form-label small fw-bold text-muted">Descrição Completa</label>
-                            <textarea name="descricao" class="form-control" rows="4" required><%= produto ? produto.descricao : '' %></textarea>
+                            <label for="produto-descricao" class="form-label small fw-bold text-muted">Descrição Completa</label>
+                            <textarea id="produto-descricao" name="descricao" class="form-control" rows="4" required><%= produto ? produto.descricao : '' %></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Código de Barras (EAN)</label>
-                            <input type="text" name="codigo_barras" class="form-control" value="<%= produto ? produto.codigo_barras : '' %>">
+                            <label for="produto-ean" class="form-label small fw-bold text-muted">Código de Barras (EAN)</label>
+                            <input type="text" id="produto-ean" name="codigo_barras" class="form-control" value="<%= produto ? produto.codigo_barras : '' %>" inputmode="numeric">
                         </div>
                     </div>
 

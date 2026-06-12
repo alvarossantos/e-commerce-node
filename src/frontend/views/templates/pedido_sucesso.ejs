@@ -4,8 +4,8 @@
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
                 
                 <div class="bg-success text-white p-4 text-center">
-                    <i class="fas fa-check-circle fa-4x mb-3"></i>
-                    <h2 class="fw-bold">Pagamento Aprovado!</h2>
+                    <i class="fas fa-check-circle fa-4x mb-3" aria-hidden="true"></i>
+                    <h1 class="fw-bold h2">Pagamento Aprovado!</h1>
                     <p class="mb-0">A sua transação simulada foi concluída com sucesso.</p>
                 </div>
                 
@@ -17,27 +17,27 @@
                         </div>
                         <div class="col-sm-6 text-sm-end">
                             <h6 class="text-muted fw-bold text-uppercase mb-2">Data da Compra</h6>
-                            <h5 class="fw-bold text-dark"><%= new Date(pedido.data_criacao).toLocaleDateString('pt-BR') %></h5>
+                            <p class="fw-bold text-dark mb-0"><%= new Date(pedido.data_criacao).toLocaleDateString('pt-BR') %></p>
                         </div>
                     </div>
 
                     <div class="alert bg-light border rounded-3 mb-4">
-                        <h6 class="fw-bold mb-2"><i class="fas fa-wallet text-primary me-2"></i> Forma de Pagamento</h6>
+                        <h6 class="fw-bold mb-2"><i class="fas fa-wallet text-primary me-2" aria-hidden="true"></i> Forma de Pagamento</h6>
                         <% if (metodoPagamento === 'pix') { %>
-                            <p class="mb-0 text-success fw-bold"><i class="fab fa-pix me-1"></i> Transação PIX (Liquidado)</p>
+                            <p class="mb-0 text-success fw-bold"><i class="fab fa-pix me-1" aria-hidden="true"></i> Transação PIX (Liquidado)</p>
                         <% } else { %>
-                            <p class="mb-0 text-primary fw-bold"><i class="fas fa-credit-card me-1"></i> Cartão de Crédito (Aprovado)</p>
+                            <p class="mb-0 text-primary fw-bold"><i class="fas fa-credit-card me-1" aria-hidden="true"></i> Cartão de Crédito (Aprovado)</p>
                         <% } %>
                     </div>
 
-                    <h6 class="fw-bold border-bottom pb-2 mb-3">Itens Comprados</h6>
+                    <h2 class="fw-bold border-bottom pb-2 mb-3 h6">Itens Comprados</h2>
                     <div class="table-responsive mb-4">
-                        <table class="table align-middle">
+                        <table class="table align-middle" aria-label="Itens do pedido #<%= pedido.id %>">
                             <tbody>
                                 <% for(let item of itens) { %>
                                     <tr>
                                         <td style="width: 60px;">
-                                            <img src="<%= item.imagem || '/img/produtos/placeholder.png' %>" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <img src="<%= item.imagem || '/img/produtos/placeholder.png' %>" class="rounded border" style="width: 50px; height: 50px; object-fit: cover;" alt="Imagem de <%= item.nome %>">
                                         </td>
                                         <td>
                                             <h6 class="mb-0 fw-bold"><%= item.nome %></h6>
@@ -59,7 +59,7 @@
                     </div>
 
                     <div class="p-3 bg-light rounded-3 border">
-                        <h6 class="fw-bold mb-2"><i class="fas fa-map-marker-alt text-danger me-2"></i> Entregar em:</h6>
+                        <h6 class="fw-bold mb-2"><i class="fas fa-map-marker-alt text-danger me-2" aria-hidden="true"></i> Entregar em:</h6>
                         <p class="mb-0 small text-secondary">
                             <%= pedido.logradouro %>, <%= pedido.numero %> <% if (pedido.complemento) { %> - <%= pedido.complemento %> <% } %><br>
                             <%= pedido.bairro %> - <%= pedido.cidade %>/<%= pedido.estado %> | CEP: <%= pedido.cep %>

@@ -1,15 +1,15 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold mb-0"><i class="fas fa-info-circle text-primary me-2"></i> Detalhes do Produto</h3>
+        <h1 class="fw-bold mb-0 h3"><i class="fas fa-info-circle text-primary me-2" aria-hidden="true"></i> Detalhes do Produto</h1>
         <a href="/admin/produtos" class="btn btn-outline-secondary rounded-pill px-4">
-            <i class="fas fa-arrow-left me-2"></i> Voltar à Listagem
+            <i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Voltar à Listagem
         </a>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="row g-0">
             <div class="col-md-4 bg-light d-flex align-items-center justify-content-center p-4 border-end">
-                <img src="<%= produto.url_imagem ? produto.url_imagem : '/img/produtos/placeholder.png' %>" class="img-fluid rounded shadow-sm" style="max-height: 320px; object-fit: contain;" alt="<%= produto.nome %>">
+                <img src="<%= produto.url_imagem ? produto.url_imagem : '/img/produtos/placeholder.png' %>" class="img-fluid rounded shadow-sm" style="max-height: 320px; object-fit: contain;" alt="Imagem de <%= produto.nome %>">
             </div>
             
             <div class="col-md-8">
@@ -27,7 +27,7 @@
 
                     <div class="row g-4">
                         <div class="col-md-6">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-warehouse me-1"></i> Controle de Inventário</h6>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-warehouse me-1" aria-hidden="true"></i> Controle de Inventário</h6>
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">Estoque Atual: 
                                     <span class="fw-bold <%= (estoque && estoque.quantidade <= estoque.estoque_minimo) ? 'text-danger' : 'text-success' %>">
@@ -39,12 +39,12 @@
                         </div>
                         
                         <div class="col-md-6">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-barcode me-1"></i> Identificação Comercial</h6>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-barcode me-1" aria-hidden="true"></i> Identificação Comercial</h6>
                             <p class="mb-0">Código de Barras (EAN):<br><strong class="text-dark"><%= produto.codigo_barras || 'Não registrado' %></strong></p>
                         </div>
 
                         <div class="col-12">
-                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-align-left me-1"></i> Descrição do Produto</h6>
+                            <h6 class="text-muted small fw-bold text-uppercase mb-2"><i class="fas fa-align-left me-1" aria-hidden="true"></i> Descrição do Produto</h6>
                             <p class="text-secondary bg-light p-3 rounded-3 mb-0 text-wrap text-break" style="white-space: pre-line;"><%= produto.descricao %></p>
                         </div>
                     </div>
@@ -53,11 +53,11 @@
 
                     <div class="d-flex gap-2">
                         <a href="/admin/produtos/<%= produto.id %>/editar" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm">
-                            <i class="fas fa-edit me-2"></i> Editar Produto
+                            <i class="fas fa-edit me-2" aria-hidden="true"></i> Editar Produto
                         </a>
                         
                         <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalExcluirDetalhe">
-                            <i class="fas fa-trash me-2"></i> Excluir Produto
+                            <i class="fas fa-trash me-2" aria-hidden="true"></i> Excluir Produto
                         </button>
                     </div>
                 </div>
@@ -66,14 +66,14 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalExcluirDetalhe" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalExcluirDetalhe" tabindex="-1" aria-labelledby="modalExcluirDetalheLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow rounded-4 text-start">
             <div class="modal-header border-bottom-0 pb-0 mt-2">
-                <h5 class="modal-title fw-bold text-danger">
-                    <i class="fas fa-exclamation-circle me-2"></i> Confirmar Exclusão
+                <h5 class="modal-title fw-bold text-danger" id="modalExcluirDetalheLabel">
+                    <i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i> Confirmar Exclusão
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div class="modal-body py-4">
                 <p class="mb-0">Tem certeza que deseja excluir o produto <strong><%= produto.nome %></strong> permanentemente?</p>
@@ -82,6 +82,7 @@
             <div class="modal-footer border-top-0 pt-0 mb-2">
                 <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
                 <form action="/admin/produtos/<%= produto.id %>?_method=DELETE" method="POST" class="m-0 p-0">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm">Sim, Excluir</button>
                 </form>
             </div>

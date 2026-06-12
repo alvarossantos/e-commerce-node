@@ -36,15 +36,24 @@ const { verificarAdmin, injetarUsuarioNoEJS } = require('./src/backend/middlewar
 const carrinhoRoutes = require('./src/backend/routes/carrinhoRoutes');
 const checkoutRoutes = require('./src/backend/routes/checkoutRoutes');
 const carrinhoMiddleware = require('./src/backend/middlewares/carrinhoMiddleware');
+const { csrfGenerate, csrfValidate } = require('./src/backend/middlewares/csrfMiddleware');
 
 // Habilitar suporte a PUT, PATCH e DELETE via formulários EJS/HTML
 app.use(methodOverride('_method'));
 
-// Midlleware que injeta o usuário no EJS 
+// Middleware que injeta o usuário no EJS 
 app.use(injetarUsuarioNoEJS);
 
-// Midlleware da contagem do carrinho
+// Middleware da contagem do carrinho
 app.use(carrinhoMiddleware);
+
+// Gera token CSRF para todos os templates
+app.use(csrfGenerate);
+
+// Valida CSRF apenas em produção
+if (process.env.NODE_ENV !== 'test') {
+    app.use(csrfValidate);
+}
 
 // Rotas
 app.use('/', lojaRoutes);

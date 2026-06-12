@@ -3,35 +3,36 @@
         <div class="col-md-6 col-lg-5">
             <div class="card border-0 shadow rounded-4 p-4 mt-2">
                 <div class="text-center mb-4">
-                    <h3 class="fw-bold">Crie a sua conta</h3>
+                    <h1 class="fw-bold h3">Crie a sua conta</h1>
                     <p class="text-muted small">Junte-se à NexStore e aproveite as nossas ofertas.</p>
                 </div>
 
                 <% if (typeof erro !== 'undefined' && erro) { %>
-                    <div class="alert alert-danger small py-2 rounded-3 text-center"><%= erro %></div>
+                    <div class="alert alert-danger small py-2 rounded-3 text-center" role="alert"><%= erro %></div>
                 <% } %>
 
-                <form action="/cadastro" method="POST">
+                <form action="/cadastro" method="POST" novalidate>
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-muted small">Nome Completo</label>
-                        <input type="text" name="nome" class="form-control rounded-pill px-4" required placeholder="Nome Completo">
+                        <label for="cad-nome" class="form-label fw-bold text-muted small">Nome Completo</label>
+                        <input type="text" id="cad-nome" name="nome" class="form-control rounded-pill px-4" required placeholder="Nome Completo" autocomplete="name">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-muted small">E-mail</label>
-                        <input type="email" name="email" class="form-control rounded-pill px-4" required placeholder="seu@email.com">
+                        <label for="cad-email" class="form-label fw-bold text-muted small">E-mail</label>
+                        <input type="email" id="cad-email" name="email" class="form-control rounded-pill px-4" required placeholder="seu@email.com" autocomplete="email">
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-muted small">CPF (apenas números)</label>
-                        <input type="text" name="cpf" class="form-control rounded-pill px-4" required placeholder="12345678901" pattern="\d{11}" title="Digite os 11 dígitos do CPF, apenas números.">
+                        <label for="cad-cpf" class="form-label fw-bold text-muted small">CPF (apenas números)</label>
+                        <input type="text" id="cad-cpf" name="cpf" class="form-control rounded-pill px-4" required placeholder="12345678901" pattern="\d{11}" title="Digite os 11 dígitos do CPF, apenas números." inputmode="numeric">
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold text-muted small">Data de Nascimento</label>
-                        <input type="date" name="data_nascimento" class="form-control rounded-pill px-4" required>
+                        <label for="cad-nascimento" class="form-label fw-bold text-muted small">Data de Nascimento</label>
+                        <input type="date" id="cad-nascimento" name="data_nascimento" class="form-control rounded-pill px-4" required>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-muted small">Crie uma Senha</label>
-                        <input type="password" name="senha" class="form-control rounded-pill px-4" required placeholder="Mínimo de 6 caracteres">
+                        <label for="cad-senha" class="form-label fw-bold text-muted small">Crie uma Senha</label>
+                        <input type="password" id="cad-senha" name="senha" class="form-control rounded-pill px-4" required placeholder="Mínimo de 6 caracteres" autocomplete="new-password">
                     </div>
                     <button type="submit" class="btn btn-dark w-100 rounded-pill fw-bold py-2 shadow-sm">Criar Conta</button>
                 </form>

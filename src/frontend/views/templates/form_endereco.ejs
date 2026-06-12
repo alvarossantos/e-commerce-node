@@ -2,40 +2,41 @@
     <div class="row justify-content-center">
         <div class="col-md-7 col-lg-6">
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                <h4 class="fw-bold mb-4">
-                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                <h1 class="fw-bold mb-4 h4">
+                    <i class="fas fa-map-marker-alt text-primary me-2" aria-hidden="true"></i>
                     <%= endereco ? 'Editar Endereço de Entrega' : 'Novo Endereço de Entrega' %>
-                </h4>
+                </h1>
 
                 <form action="<%= endereco ? '/perfil/endereco/' + endereco.id + '?_method=PUT' : '/perfil/endereco' %>" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <div class="row g-3">
                         <div class="col-md-9">
-                            <label class="form-label small fw-bold text-muted">Rua / Logradouro</label>
-                            <input type="text" name="logradouro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.logradouro : '' %>" required placeholder="Av. Paulista">
+                            <label for="end-logradouro" class="form-label small fw-bold text-muted">Rua / Logradouro</label>
+                            <input type="text" id="end-logradouro" name="logradouro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.logradouro : '' %>" required placeholder="Av. Paulista">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">Número</label>
-                            <input type="text" name="numero" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.numero : '' %>" required placeholder="123">
+                            <label for="end-numero" class="form-label small fw-bold text-muted">Número</label>
+                            <input type="text" id="end-numero" name="numero" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.numero : '' %>" required placeholder="123" inputmode="numeric">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Bairro</label>
-                            <input type="text" name="bairro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.bairro : '' %>" required placeholder="Centro">
+                            <label for="end-bairro" class="form-label small fw-bold text-muted">Bairro</label>
+                            <input type="text" id="end-bairro" name="bairro" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.bairro : '' %>" required placeholder="Centro">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Complemento</label>
-                            <input type="text" name="complemento" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.complemento : '' %>" placeholder="Apto 42, Bloco B">
+                            <label for="end-complemento" class="form-label small fw-bold text-muted">Complemento</label>
+                            <input type="text" id="end-complemento" name="complemento" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.complemento : '' %>" placeholder="Apto 42, Bloco B">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small fw-bold text-muted">Cidade</label>
-                            <input type="text" name="cidade" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cidade : '' %>" required placeholder="São Paulo">
+                            <label for="end-cidade" class="form-label small fw-bold text-muted">Cidade</label>
+                            <input type="text" id="end-cidade" name="cidade" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cidade : '' %>" required placeholder="São Paulo">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">Estado</label>
-                            <input type="text" name="estado" class="form-control rounded-pill px-3 text-uppercase" maxlength="2" value="<%= endereco ? endereco.estado : '' %>" required placeholder="SP">
+                            <label for="end-estado" class="form-label small fw-bold text-muted">Estado</label>
+                            <input type="text" id="end-estado" name="estado" class="form-control rounded-pill px-3 text-uppercase" maxlength="2" value="<%= endereco ? endereco.estado : '' %>" required placeholder="SP">
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small fw-bold text-muted">CEP</label>
-                            <input type="text" name="cep" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cep : '' %>" required placeholder="01311-200">
+                            <label for="end-cep" class="form-label small fw-bold text-muted">CEP</label>
+                            <input type="text" id="end-cep" name="cep" class="form-control rounded-pill px-3" value="<%= endereco ? endereco.cep : '' %>" required placeholder="01311-200" inputmode="numeric">
                         </div>
                     </div>
 
