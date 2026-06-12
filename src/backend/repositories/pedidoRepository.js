@@ -72,7 +72,7 @@ class PedidoRepository {
 
     async contarTotal() {
         const { rows } = await pool.query('SELECT COUNT(*) AS total FROM pedidos');
-        return rows[0].total;
+        return parseInt(rows[0].total, 10);
     }
 
     async calcularFaturamento() {

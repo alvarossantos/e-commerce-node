@@ -34,7 +34,13 @@ exports.fazerLogin = async (req, res) => {
 
         if (req.cookies.carrinho_visitante) {
             const CarrinhoRepository = require('../repositories/carrinhoRepository');
-            const carrinhoVisitante = JSON.parse(req.cookies.carrinho_visitante);
+            let carrinhoVisitante = [];
+            try {
+                carrinhoVisitante = JSON.parse(req.cookies.carrinho_visitante);
+                if (!Array.isArray(carrinhoVisitante)) carrinhoVisitante = [];
+            } catch (e) {
+                carrinhoVisitante = [];
+            }
         
             for (let item of carrinhoVisitante) {
                 await CarrinhoRepository.adicionarItem(usuario.id, item.produtoId, item.quantidade);

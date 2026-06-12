@@ -55,7 +55,7 @@ exports.adicionarAvaliacao = async (req, res) => {
     const produtoId = req.params.id;
     const { nota, comentario } = req.body;
 
-    const usuarioAuth = res.locals.usuarioLogado || req.usuario || req.user;
+    const usuarioAuth = res.locals.usuarioLogado || req.usuarioLogado;
 
     if (!usuarioAuth) {
       return res.redirect(

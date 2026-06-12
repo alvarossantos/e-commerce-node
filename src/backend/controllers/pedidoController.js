@@ -67,7 +67,7 @@ exports.listarTodos = async (req, res) => {
         res.render('admin_pedidos', { layout: 'layout', pedidos });
     } catch (erro) {
         console.error("=== ERRO AO LISTAR TODOS OS PEDIDOS ===", erro);
-        res.status(500).senhd('Erro interno ao listar pedidos.');
+        res.status(500).send('Erro interno ao listar pedidos.');
     }
 };
 

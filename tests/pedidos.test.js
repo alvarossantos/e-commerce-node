@@ -41,19 +41,19 @@ const itensPedidoExemplo = [
   },
 ];
 
-// ─── Suite: GET /pedidos — Histórico de pedidos ───────────────────────────────
-describe('GET /pedidos — Histórico de pedidos do usuário', () => {
+// ─── Suite: GET /pedidos/meus-pedidos — Histórico de pedidos ───────────────────
+describe('GET /pedidos/meus-pedidos — Histórico de pedidos do usuário', () => {
   test('deve redirecionar visitante não logado para login', async () => {
-    const res = await request(app).get('/pedidos');
+    const res = await request(app).get('/pedidos/meus-pedidos');
     expect(res.statusCode).toBe(302);
     expect(res.headers.location).toMatch(/login/i);
   });
 });
 
-// ─── Suite: GET /pedidos/:id — Detalhe/recibo de pedido ──────────────────────
-describe('GET /pedidos/:id — Detalhe do pedido', () => {
+// ─── Suite: GET /pedidos/sucesso/:id — Detalhe/recibo de pedido ───────────────
+describe('GET /pedidos/sucesso/:id — Detalhe do pedido', () => {
   test('deve redirecionar visitante não logado', async () => {
-    const res = await request(app).get('/pedidos/42');
+    const res = await request(app).get('/pedidos/sucesso/42');
     expect(res.statusCode).toBe(302);
   });
 });
@@ -90,10 +90,10 @@ describe('Regras de negócio — Status de pedido', () => {
 });
 
 // ─── Suite: Admin — Atualizar status do pedido ───────────────────────────────
-describe('POST /admin/pedidos/:id/status — Atualizar status (admin)', () => {
+describe('PATCH /pedidos/:id/status — Atualizar status (admin)', () => {
   test('deve redirecionar não-admin para login', async () => {
     const res = await request(app)
-      .post('/admin/pedidos/42/status')
+      .patch('/pedidos/42/status')
       .send({ status: 'enviado' });
 
     expect(res.statusCode).toBe(302);

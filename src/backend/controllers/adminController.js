@@ -3,6 +3,9 @@ const ProdutoRepository = require('../repositories/produtoRepository');
 const PedidoRepository = require('../repositories/pedidoRepository');
 const EstoqueRepository = require('../repositories/estoqueRepository');
 const UsuarioRepository = require('../repositories/usuarioRepository');
+const path = require('path');
+const fs = require('fs');
+const sharp = require('sharp');
 
 // GET
 exports.renderizarDashboard = async (req, res) => {
@@ -86,7 +89,7 @@ exports.salvarNovoProduto = async (req, res) => {
             await sharp(req.file.buffer)
                 .resize(800, 800, { fit: 'inside'})
                 .webp({ quality: 80 })
-                .toFile(path.join(caminhoDestinoAbsoluto, nomeArquivo));
+                .toFile(path.join(caminhoDestino, nomeArquivo));
 
             req.body.url_imagem = `/img/produtos/${nomeArquivo}`;
         }

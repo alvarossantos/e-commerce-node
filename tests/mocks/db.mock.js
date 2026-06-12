@@ -16,6 +16,6 @@ const mockPool = {
 };
 
 // Substitui o módulo real pelo mock antes de qualquer import
-jest.mock('../../src/backend/config/db', () => mockPool);
+jest.mock('../../src/backend/config/database', () => mockPool);
 
 module.exports = { mockPool, mockQuery };

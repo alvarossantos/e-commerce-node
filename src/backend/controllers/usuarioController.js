@@ -11,7 +11,6 @@ exports.criar = async (req, res) => {
       data_nascimento,
       telefone,
       url_foto,
-      is_admin,
     } = req.body;
 
     const novoUsuario = new Usuario({
@@ -22,7 +21,7 @@ exports.criar = async (req, res) => {
       data_nascimento,
       telefone,
       url_foto,
-      is_admin,
+      is_admin: false,
     });
     await novoUsuario.encriptarSenha();
 

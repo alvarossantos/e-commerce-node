@@ -7,7 +7,7 @@ exports.adicionarItem = async (req, res) => {
         const quantidade = parseInt(req.body.quantidade) || 1;
 
         if (!produtoId) {
-            res.redirect('/?erro=Erro ao identificar o produto. Tente novamente.');
+            return res.redirect('/?erro=Erro ao identificar o produto. Tente novamente.');
         }
 
         // Usuário Logado (salva direto no banco de dados)
@@ -20,7 +20,12 @@ exports.adicionarItem = async (req, res) => {
             // Lê o cookie ou cria um array vazio
             let carrinho = [];
             if (req.cookies.carrinho_visitante) {
-                carrinho = JSON.parse(req.cookies.carrinho_visitante);
+                try {
+                    carrinho = JSON.parse(req.cookies.carrinho_visitante);
+                    if (!Array.isArray(carrinho)) carrinho = [];
+                } catch (e) {
+                    carrinho = [];
+                }
             }
 
             // Verifica se o produto já está no carrinho
@@ -55,7 +60,13 @@ exports.renderizarCarrinho = async (req, res) => {
         }
         // Se for anônimo, tem que buscar os produtos no banco usando os IDs que estão no Cookie
         else if (req.cookies.carrinho_visitante) {
-            const itensCookie = JSON.parse(req.cookies.carrinho_visitante);
+            let itensCookie = [];
+            try {
+                itensCookie = JSON.parse(req.cookies.carrinho_visitante);
+                if (!Array.isArray(itensCookie)) itensCookie = [];
+            } catch (e) {
+                itensCookie = [];
+            }
             
             // Loop para buscar nome e preço de cada ID salvo no cookie
             for (let item of itensCookie) {
@@ -89,7 +100,13 @@ exports.removerItem = async (req, res) => {
         } else {
             // Remove do Cookie
             if (req.cookies.carrinho_visitante) {
-                let carrinho = JSON.parse(req.cookies.carrinho_visitante);
+                let carrinho = [];
+                try {
+                    carrinho = JSON.parse(req.cookies.carrinho_visitante);
+                    if (!Array.isArray(carrinho)) carrinho = [];
+                } catch (e) {
+                    carrinho = [];
+                }
                 // Filtra o array, mantendo apenas os itens com ID diferente do que queremos remover
                 carrinho = carrinho.filter(item => item.produtoId != produtoId);
                 

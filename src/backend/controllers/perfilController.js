@@ -1,7 +1,7 @@
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const EnderecoRepository = require('../repositories/enderecoRepository');
 const Usuario = require('../models/usuarioModel');
-const SECRET = 'chave_super_secreta';
+const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');

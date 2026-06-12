@@ -18,9 +18,11 @@ exports.consultar = async (req, res) => {
 exports.atualizar = async (req, res) => {
     try {
         const { produto_id } = req.params;
-        const { quantidade } = req.body;
+        const { quantidade: quantidadeRaw } = req.body;
 
-        if (quantidade === undefined || quantidade < 0) {
+        const quantidade = parseInt(quantidadeRaw);
+
+        if (isNaN(quantidade) || quantidade < 0) {
             return res.status(400).json({ mensagem: 'Quantidade inválida.' });
         }
 

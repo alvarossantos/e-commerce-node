@@ -40,7 +40,7 @@ class UsuarioRepository {
     }
 
     async buscarPorId(id) {
-        const sql = `SELECT id, nome, email, senha_hash, cpf, data_nascimento, telefone, url_foto, is_admin FROM usuarios WHERE id = $1;`;
+        const sql = `SELECT id, nome, email, cpf, data_nascimento, telefone, url_foto, is_admin FROM usuarios WHERE id = $1;`;
         const { rows } = await pool.query(sql, [id]);
         return rows[0];
     }
@@ -84,7 +84,7 @@ class UsuarioRepository {
 
     async contarTotal() {
         const { rows } = await pool.query('SELECT COUNT(*) AS total FROM usuarios');
-        return rows[0].total;
+        return parseInt(rows[0].total, 10);
     }
 }
 
