@@ -18,82 +18,94 @@ A **NexStore** é uma plataforma de vendas online *Full-Stack*. O seu grande dif
 
 O sistema possui duas frentes principais:
 
-* **Visão do Cliente (Loja):** Navegação de catálogo, sistema de busca, carrinho de compras híbrido (funciona via *Cookies* para visitantes e via *Banco de Dados* para utilizadores logados), checkout completo, emissão de recibos e histórico de pedidos.
-* **Visão do Administrador (Painel):** Dashboard analítico (cálculo de faturamento, total de vendas e alertas de estoque baixo), gestão de produtos e controle do status de entrega dos pedidos.
+* **Visão do Cliente (Loja):** Navegação de catálogo com busca e filtros por categoria, sistema de avaliações com estrelas, carrinho de compras híbrido (funciona via *Cookies* para visitantes e via *Banco de Dados* para utilizadores logados), checkout completo com seleção de endereço e pagamento, emissão de recibos e histórico de pedidos.
+* **Visão do Administrador (Painel):** Dashboard analítico com KPIs (faturamento, total de vendas, usuários registrados e alertas de estoque baixo), gestão completa de produtos (CRUD com upload de imagens via Sharp) e controle do status de entrega dos pedidos.
 
-Além disso, o projeto adota práticas avançadas de engenharia de software, incluindo **containerização (Docker)**, **pipeline de CI/CD (GitHub Actions)**, **cobertura de testes automatizados** e **documentação visual de API**.
+Além disso, o projeto adota práticas avançadas de engenharia de software, incluindo **containerização (Docker)**, **pipeline de CI/CD (GitHub Actions)**, **cobertura de testes automatizados**, **proteção CSRF**, **acessibilidade (a11y)** e **SEO otimizado**.
 
 ---
 
 ## 🚀 2. Tecnologias Usadas
 
-O projeto foi construído utilizando as seguintes ferramentas:
-
 **Back-end:**
-* **Node.js & Express.js:** Motor principal da aplicação e rotas.
-* **PostgreSQL (`pg`):** Banco de dados relacional robusto.
-* **JWT & Cookies:** Autenticação segura e manutenção de sessão.
-* **Bcrypt:** Criptografia de senhas no banco de dados.
+* **Node.js & Express.js 5:** Motor principal da aplicação e rotas.
+* **PostgreSQL (`pg`):** Banco de dados relacional com pool de conexões.
+* **JWT & Cookies:** Autenticação segura via token (httpOnly, 24h expiração).
+* **Bcrypt:** Criptografia de senhas com salt.
+* **Sharp:** Processamento e conversão de imagens para WebP.
+* **Multer:** Upload de arquivos em memória.
+* **Method Override:** Suporte a PUT/DELETE via formulários HTML.
 
 **Front-end:**
-* **EJS:** Motor de templates dinâmicos integrado nativamente.
-* **Bootstrap 5 & FontAwesome:** Interface responsiva (*Mobile-First*) e moderna.
+* **EJS:** Motor de templates dinâmicos com layouts separados (admin/cliente).
+* **Bootstrap 5.3:** Interface responsiva (Mobile-First) e moderna.
+* **Font Awesome 6:** Ícones vetoriais.
+* **CSS Customizado:** Arquivo externo `main.css` com design system consistente.
+
+**Segurança:**
+* **CSRF Protection:** Middleware HMAC-SHA256 com tokens por sessão.
+* ** Helmet-ready:** Headers de segurança configuráveis.
 
 **DevOps & Qualidade (QA):**
-* **Docker & Docker Compose:** Containerização para padronização de ambientes.
-* **Jest & Supertest:** Testes de integração e unitários automatizados.
-* **GitHub Actions:** CI/CD para execução automática de testes a cada commit.
+* **Docker & Docker Compose:** Containerização multi-stage com Alpine.
+* **Jest & Supertest:** 34 testes automatizados (integração + unitários).
+* **GitHub Actions:** CI/CD com testes automáticos e build Docker.
 
 ---
 
 ## 🏗️ 3. Estrutura do Projeto
 
-O código está rigorosamente organizado para separar a interface visual das lógicas de negócio:
-
 ```text
 📦 e-commerce-node
- ┣ 📂 .github/workflows    # Pipeline de CI/CD (GitHub Actions)
- ┣ 📂 docs                 # Documentação da API em HTML (api.html)
- ┣ 📂 src                  
- ┃ ┣ 📂 backend            # Configurações, Controllers, Middlewares, Repositories e Routes
- ┃ ┗ 📂 frontend           # Arquivos estáticos (CSS/Img) e Views (Templates EJS)
- ┣ 📂 tests                # Testes automatizados (Jest) e mocks do banco de dados
- ┣ 📜 Dockerfile           # Construção da imagem Docker (Multi-stage build)
- ┣ 📜 docker-compose.yml   # Orquestração rápida da aplicação + Banco PostgreSQL
- ┣ 📜 CHANGELOG.md         # Histórico de atualizações e versões do sistema
- ┣ 📜 jest.config.js       # Configurações do robô de testes
- ┣ 📜 server.js            # Ponto de entrada da aplicação
- ┗ 📜 package.json / .env  # Dependências e Variáveis de ambiente
-
+ ┣ 📂 .github/workflows     # Pipeline de CI/CD (GitHub Actions)
+ ┣ 📂 docs                  # Documentação visual da API (api.html)
+ ┣ 📂 src
+ ┃ ┣ 📂 backend
+ ┃ ┃ ┣ 📂 config            # Conexão com o banco (database.js)
+ ┃ ┃ ┣ 📂 controllers       # Lógica de negócio (11 controllers)
+ ┃ ┃ ┣ 📂 middlewares        # Auth (JWT), CSRF, Upload (Multer), Carrinho
+ ┃ ┃ ┣ 📂 models            # Modelo de dados (Produto, Usuario)
+ ┃ ┃ ┣ 📂 repositories      # Queries SQL parametrizadas (7 repositories)
+ ┃ ┃ ┗ 📂 routes            # Definição de endpoints (11 arquivos)
+ ┃ ┗ 📂 frontend
+ ┃ ┃ ┣ 📂 static
+ ┃ ┃ ┃ ┣ 📂 css/            # CSS externo consolidado (main.css)
+ ┃ ┃ ┃ ┗ 📂 img/            # Imagens de produtos e usuários
+ ┃ ┃ ┗ 📂 views/templates   # 17 templates EJS com layouts
+ ┣ 📂 tests                 # 34 testes automatizados (Jest + Supertest)
+ ┃ ┃ ┗ 📂 mocks             # Mock do pool PostgreSQL
+ ┣ 📜 Dockerfile            # Build multi-stage (Node 20 Alpine)
+ ┣ 📜 docker-compose.yml    # Orquestração App + PostgreSQL
+ ┣ 📜 CHANGELOG.md          # Histórico de versões
+ ┣ 📜 jest.config.js        # Configuração do Jest
+ ┣ 📜 server.js             # Ponto de entrada da aplicação
+ ┣ 📜 nodemon.json          # Configuração do Nodemon (dev)
+ ┣ 📜 database.sql          # Script SQL (DDL + triggers + seed)
+ ┗ 📜 package.json / .env   # Dependências e variáveis de ambiente
 ```
 
 ---
 
 ## ⚙️ 4. Como Usar
 
-Você pode rodar este projeto de forma automatizada (recomendado) ou configurando o ambiente manualmente.
-
 ### Opção A: Rodando via Docker (Recomendado)
-
-A forma mais rápida de testar o projeto. O Docker irá subir a aplicação e o banco de dados já configurado simultaneamente.
 
 **1.** Clone o repositório e entre na pasta:
 
 ```bash
-git clone [https://github.com/alvarossantos/e-commerce-node.git](https://github.com/alvarossantos/e-commerce-node.git)
+git clone https://github.com/alvarossantos/e-commerce-node.git
 cd e-commerce-node
-
 ```
 
-**2.** Suba os containers com o Docker Compose:
+**2.** Suba os containers:
 
 ```bash
 docker compose up -d
-
 ```
 
 **3.** Acesse no navegador:
-Abra `http://localhost:3000` e aproveite o sistema! *(O banco de dados será inicializado automaticamente na primeira execução).*
+
+Abra `http://localhost:3000`. O banco de dados será inicializado automaticamente na primeira execução.
 
 ---
 
@@ -101,66 +113,127 @@ Abra `http://localhost:3000` e aproveite o sistema! *(O banco de dados será ini
 
 **Pré-requisitos:** Node.js (v18+) e PostgreSQL instalados.
 
-1. Clone o repositório e instale as dependências:
+**1.** Clone e instale dependências:
+
 ```bash
+git clone https://github.com/alvarossantos/e-commerce-node.git
+cd e-commerce-node
 npm install
-
 ```
 
+**2.** Crie o banco de dados no PostgreSQL e rode o script `database.sql`:
 
-2. Crie um banco de dados no PostgreSQL (ex: `ecommerce_db`) e rode os scripts `.sql` fornecidos.
-3. Crie o arquivo `.env` na raiz baseado no `.env.example`:
-```env
-PORT=3000
-DB_HOST=localhost
-DB_USER=seu_usuario_postgres
-DB_PASS=sua_senha_postgres
-DB_NAME=ecommerce_db
-DB_PORT=5432
-JWT_SECRET=sua_chave_secreta_super_segura
-
-```
-
-
-4. Inicie o servidor:
 ```bash
-npm run dev    # Para desenvolvimento
-npm start      # Para produção
-
+psql -U postgres -c "CREATE DATABASE \"e-commerce\";"
+psql -U postgres -d "e-commerce" -f database.sql
 ```
 
+**3.** Crie o arquivo `.env` na raiz:
 
+```env
+PORT=4000
+DB_USER=postgres
+DB_PASSWORD=sua_senha_postgres
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=e-commerce
+JWT_SECRET=sua_chave_secreta_super_segura
+```
+
+**4.** Inicie o servidor:
+
+```bash
+npm run dev     # Desenvolvimento (com Nodemon)
+npm start       # Produção
+```
 
 ---
 
 ## 🧪 5. Testes Automatizados
 
-A NexStore possui uma suíte de testes robusta (Jest + Supertest) para garantir o funcionamento das regras de negócio (Carrinho, Estoque, Pedidos e Autenticação). O banco de dados é *mockado* (simulado) para que os testes rodem de forma rápida e segura sem alterar dados reais.
+A NexStore possui **34 testes** organizados em 4 suítes:
 
-Para rodar os testes na sua máquina:
+| Suíte | Cobertura |
+|-------|-----------|
+| `auth.test.js` | Cadastro (válido, duplicado, incompleto), Login (válido, senha incorreta), Logout |
+| `produtos.test.js` | Catálogo (200, vazio), Detalhe (existente, 404, estoque baixo), Admin (redirect sem auth) |
+| `carrinho.test.js` | Carrinho vazio, Adicionar item (válido, sem estoque, qtd zero, produto inexistente), Remover, Checkout, Merge híbrido |
+| `pedidos.test.js` | Histórico (redirect sem auth), Detalhe, Status válidos, Cálculo de totais, Admin status |
+
+O banco de dados é *mockado* para que os testes rodem rápido sem alterar dados reais.
 
 ```bash
-# Instale as dependências (se ainda não o fez)
-npm install
-
-# Execute a suíte de testes
-npm test
-
+npm test                  # Executa todos os testes
+npm run test:watch        # Modo watch (re-executa ao salvar)
+npm run test:coverage     # Relatório de cobertura
 ```
 
 ---
 
-## 📚 6. Documentação da API
+## 🔒 6. Segurança
 
-Toda a documentação dos *endpoints*, modelos de dados, rotas de administrador e fluxos de checkout está detalhada visualmente.
+| Recurso | Implementação |
+|---------|---------------|
+| **Autenticação** | JWT via cookie httpOnly (24h expiração) |
+| **Senhas** | Bcrypt com salt rounds = 10 |
+| **CSRF** | Token HMAC-SHA256 por sessão, validado em POST/PUT/PATCH/DELETE |
+| **SQL Injection** | Queries parametrizadas ($1, $2, ...) em todos os repositories |
+| **Upload** | Multer com limite de 20MB, aceita apenas imagens (jpeg/png/webp) |
+| **RBAC** | Middleware `verificarAdmin` em rotas administrativas |
+| **Controle de estoque** | Transações SQL com BEGIN/COMMIT/ROLLBACK no processamento de pedidos |
 
-Para consultá-la, basta abrir o arquivo localizado em:
-👉 `docs/api.html` diretamente no seu navegador.
+---
+
+## ♿ 7. Acessibilidade & SEO
+
+**Acessibilidade (a11y):**
+* Tag `<main>` com `id` para skip links
+* Skip link "Pular para o conteúdo principal"
+* Labels associados a inputs (`for/id`)
+* `aria-label`, `aria-hidden`, `role` em elementos interativos
+* Hierarquia de headings correta (h1 → h2 → h3)
+* `autocomplete` em formulários de login/cadastro
+* Contraste de cores adequado
+
+**SEO:**
+* `<meta name="description">` em todas as páginas
+* Open Graph tags (og:title, og:description, og:type)
+* `<meta name="robots" content="noindex, nofollow">` no admin
+* Favicon SVG por página (🎮 loja, 🛡️ admin)
+* `lang="pt-BR"` padronizado
+
+---
+
+## 📚 8. Documentação da API
+
+Toda a documentação dos *endpoints*, modelos de dados, rotas de administrador e fluxos de checkout está detalhada visualmente em:
+
+👉 `docs/api.html` — abra diretamente no navegador.
+
+---
+
+## 📊 9. Resumo Técnico
+
+| Aspecto | Detalhe |
+|---------|---------|
+| **Nome** | NexStore |
+| **Versão** | 1.2.0 |
+| **Autor** | Álvaro Santos |
+| **Arquitetura** | MVC + Repository Pattern |
+| **Backend** | Express.js 5 + Node.js 20 |
+| **Banco** | PostgreSQL 16 (pool de conexões) |
+| **Template Engine** | EJS com layouts separados |
+| **Autenticação** | JWT (cookies httpOnly, 24h) |
+| **Senhas** | Bcrypt (salt 10) |
+| **Upload** | Multer (memory) + Sharp (WebP) |
+| **Carrinho** | Híbrido: cookie (visitante) + banco (logado) |
+| **CSRF** | HMAC-SHA256 com expiração de 1h |
+| **Testes** | 34 testes (Jest + Supertest) |
+| **CI/CD** | GitHub Actions (testes + Docker build) |
+| **Containerização** | Docker multi-stage (Alpine) |
+| **Frontend** | Bootstrap 5.3 + CSS customizado externo |
+| **Módulos** | CommonJS |
 
 ---
 
 *Desenvolvido com dedicação por Álvaro Santos.*
-
-```
-
-```
