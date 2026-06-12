@@ -1,20 +1,20 @@
 <div class="container py-5 font-custom">
-    
+
     <% if (erro) { %> <div class="alert alert-danger rounded-4 shadow-sm mb-4"><%= erro %></div> <% } %>
     <% if (sucesso) { %> <div class="alert alert-success rounded-4 shadow-sm mb-4"><%= sucesso %></div> <% } %>
 
     <div class="col-lg-5">
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            
+
             <div class="text-center mb-4">
-                <img src="<%= usuario.url_foto ? usuario.url_foto : '/static/img/usuarios/default.png' %>" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                
+                <img src="<%= usuario.url_foto ? usuario.url_foto : '/img/usuarios/default.png' %>" class="rounded-circle border shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
+
                 <form action="/perfil/foto" method="POST" enctype="multipart/form-data" class="mt-3 px-3">
                     <div class="mb-2">
                         <label class="form-label small fw-bold text-muted w-100 text-start">Fazer Upload de Foto</label>
                         <input class="form-control form-control-sm" type="file" name="foto_upload" accept="image/*">
                     </div>
-                    
+
                     <div class="d-flex align-items-center mb-2">
                         <hr class="flex-grow-1 text-muted">
                         <span class="px-2 small text-muted">OU</span>
@@ -25,7 +25,7 @@
                         <label class="form-label small fw-bold text-muted w-100 text-start">Usar link da internet</label>
                         <input type="url" name="url_foto" class="form-control form-control-sm" placeholder="https://link.com/foto.jpg">
                     </div>
-                    
+
                     <button class="btn btn-primary btn-sm w-100 fw-bold rounded-pill shadow-sm" type="submit">
                         <i class="fas fa-camera me-1"></i> Atualizar Avatar
                     </button>
@@ -79,7 +79,7 @@
                                     </div>
                                     <div class="d-flex gap-1">
                                         <a href="/perfil/endereco/<%= end.id %>/editar" class="btn btn-sm btn-light border rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-edit text-primary"></i></a>
-                                        
+
                                         <form action="/perfil/endereco/<%= end.id %>?_method=DELETE" method="POST" class="m-0 p-0">
                                             <button type="submit" class="btn btn-sm btn-light border rounded-circle" style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;" onsubmit="return confirm('Excluir este endereço?')"><i class="fas fa-trash text-danger"></i></button>
                                         </form>
