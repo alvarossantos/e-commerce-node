@@ -23,11 +23,16 @@
         <div class="container">
             <a class="navbar-brand fs-4" href="/" aria-label="NexStore — Página Inicial"><i class="fas fa-gamepad text-primary me-2" aria-hidden="true"></i>Nex<span class="text-primary">Store</span></a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLoja" aria-controls="navLoja" aria-expanded="false" aria-label="Abrir menu de navegação">
-                <span class="navbar-toggler-icon"></span>
+            <!-- Botão hambúrguer animado -->
+            <button class="ns-navbar-toggler" type="button" onclick="toggleMobileMenu()" aria-controls="navLoja" aria-expanded="false" aria-label="Abrir menu de navegação">
+                <div class="ns-hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </button>
 
-            <div class="collapse navbar-collapse" id="navLoja">
+            <div class="navbar-collapse" id="navLoja">
                 <form class="d-flex mx-auto w-50 my-2 my-lg-0" action="/" method="GET" role="search">
                     <div class="input-group">
                         <input class="form-control border-0 shadow-none" type="search" name="busca" placeholder="O que você está procurando?" aria-label="Buscar produtos" value="<%= typeof termoBusca !== 'undefined' ? termoBusca : '' %>">
@@ -38,7 +43,7 @@
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center" role="menubar">
     
                     <% if (usuarioLogado) { %>
-                        <li class="nav-item dropdown me-3" role="none">
+                        <li class="nav-item dropdown me-lg-3" role="none">
                             <a class="nav-link dropdown-toggle fw-bold text-white d-flex align-items-center" href="#" id="menuUsuario" role="menuitem" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="<%= usuarioLogado.url_foto %>" class="rounded-circle me-2 bg-white" style="width: 32px; height: 32px; object-fit: cover; padding: 2px;" alt="Foto de perfil de <%= usuarioLogado.nome %>"> 
                                 Olá, <%= usuarioLogado.nome.split(' ')[0] %>
@@ -62,7 +67,7 @@
                         </li>
                         
                     <% } else { %>
-                        <li class="nav-item me-3" role="none">
+                        <li class="nav-item me-lg-3" role="none">
                             <a class="nav-link fw-bold" href="/login" role="menuitem"><i class="fas fa-user-circle fs-5 me-1" aria-hidden="true"></i> Entrar / Cadastrar</a>
                         </li>
                     <% } %>
@@ -115,5 +120,26 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            var toggler = document.querySelector('.ns-navbar-toggler');
+            var nav = document.getElementById('navLoja');
+
+            function toggleMobileMenu() {
+                var isOpen = nav.classList.toggle('show');
+                toggler.classList.toggle('active', isOpen);
+                toggler.setAttribute('aria-expanded', isOpen);
+            }
+
+            window.toggleMobileMenu = toggleMobileMenu;
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth >= 992) {
+                    nav.classList.remove('show');
+                    toggler.classList.remove('active');
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
