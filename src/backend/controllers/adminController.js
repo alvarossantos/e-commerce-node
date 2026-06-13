@@ -127,14 +127,37 @@ exports.salvarEdicaoProduto = async (req, res) => {
 exports.excluirProduto = async (req, res) => {
     try {
         const { id } = req.params;
+
+        // 1. Verificar se o produto existe
+        const produto = await ProdutoRepository.buscarPorId(id);
+        if (!produto) {
+            return res.redirect('/admin/produtos?erro=nao_encontrado');
+        }
+
+        // 2. Verificar vínculos ANTES de tentar excluir (abordagem proativa)
+        const vinculos = await ProdutoRepository.verificarPossuiVinculos(id);
+
+        if (vinculos.possuiVendas) {
+            return res.redirect('/admin/produtos?erro=vendas');
+        }
+
+        if (vinculos.possuiEstoque) {
+            return res.redirect('/admin/produtos?erro=estoque');
+        }
+
+        if (vinculos.possuiCarrinho) {
+            return res.redirect('/admin/produtos?erro=carrinho');
+        }
+
+        // 3. Se não há vínculos, prosseguir com a exclusão
         await ProdutoRepository.deletar(id);
-        res.redirect('/admin/produtos');
+        res.redirect('/admin/produtos?sucesso=excluido');
     } catch (erro) {
         console.error("=== ERRO AO EXCLUIR PRODUTO ===", erro);
         
-        // Captura o erro específico de violação de chave estrangeira (produto já em um pedido)
+        // Fallback: captura erro de violação de chave estrangeira (caso a verificação proativa falhe)
         if (erro.code === '23503') {
-            return res.redirect('/admin/produtos?erro=em_uso')
+            return res.redirect('/admin/produtos?erro=vendas');
         }
 
         res.status(500).json({ mensagem: 'Erro interno ao excluir produto.' });

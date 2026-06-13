@@ -74,14 +74,56 @@ exports.atualizar = async (req, res) => {
 exports.deletar = async (req, res) => {
     try {
         const { id } = req.params;
-        const produtoDeletado = await ProdutoRepository.deletar(id);
 
-        if (!produtoDeletado) {
+        // 1. Verificar se o produto existe
+        const produto = await ProdutoRepository.buscarPorId(id);
+        if (!produto) {
             return res.status(404).json({ mensagem: 'Produto não encontrado.' });
         }
+
+        // 2. Verificar vínculos ANTES de tentar excluir
+        const vinculos = await ProdutoRepository.verificarPossuiVinculos(id);
+
+        if (vinculos.possuiVendas) {
+            return res.status(409).json({
+                mensagem: 'Produto não pode ser excluído pois possui vendas registradas.',
+                detalhes: {
+                    vendas: vinculos.totalVendas
+                }
+            });
+        }
+
+        if (vinculos.possuiEstoque) {
+            return res.status(409).json({
+                mensagem: 'Produto não pode ser excluído pois possui estoque disponível.',
+                detalhes: {
+                    estoque: vinculos.quantidadeEstoque
+                }
+            });
+        }
+
+        if (vinculos.possuiCarrinho) {
+            return res.status(409).json({
+                mensagem: 'Produto não pode ser excluído pois está no carrinho de compras de usuários.',
+                detalhes: {
+                    carrinho: vinculos.totalCarrinho
+                }
+            });
+        }
+
+        // 3. Se não há vínculos, prosseguir com a exclusão
+        const produtoDeletado = await ProdutoRepository.deletar(id);
         res.status(200).json({ mensagem: 'Produto deletado com sucesso!' });
     } catch (erro) {
         console.error(erro);
+
+        // Fallback: captura erro de violação de chave estrangeira
+        if (erro.code === '23503') {
+            return res.status(409).json({
+                mensagem: 'Produto não pode ser excluído pois possui dependências no sistema.'
+            });
+        }
+
         res.status(500).json({ mensagem: 'Erro interno ao deletar produto.' });
     }
 };

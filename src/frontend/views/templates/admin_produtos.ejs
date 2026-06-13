@@ -1,11 +1,58 @@
 <div class="container py-5">
 
-    <% if (typeof erro !== 'undefined' && erro === 'em_uso') { %>
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
-            <i class="fas fa-exclamation-triangle fa-2x me-3" aria-hidden="true"></i>
+    <% if (typeof erro !== 'undefined') { %>
+        <% if (erro === 'vendas') { %>
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-triangle fa-2x me-3" aria-hidden="true"></i>
+                <div>
+                    <strong>Ação Bloqueada:</strong> Este produto não pode ser excluído pois já foi vendido em pedido(s) realizado(s).
+                    <br><small>Para manter a integridade das suas vendas, sugerimos <b>editar o produto e zerar o seu estoque</b>.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        <% } else if (erro === 'estoque') { %>
+            <div class="alert alert-warning alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+                <i class="fas fa-box-open fa-2x me-3" aria-hidden="true"></i>
+                <div>
+                    <strong>Ação Bloqueada:</strong> Este produto não pode ser excluído pois ainda possui estoque disponível.
+                    <br><small>Para excluir este produto, primeiro <b>zere o estoque</b> na edição do produto ou transfira o estoque para outro produto.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        <% } else if (erro === 'carrinho') { %>
+            <div class="alert alert-info alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+                <i class="fas fa-shopping-cart fa-2x me-3" aria-hidden="true"></i>
+                <div>
+                    <strong>Ação Bloqueada:</strong> Este produto não pode ser excluído pois está no carrinho de compras de algum(ns) usuário(s).
+                    <br><small>Aguarde os carrinhos expirarem ou <b>edite o produto</b> em vez de excluí-lo.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        <% } else if (erro === 'em_uso') { %>
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-triangle fa-2x me-3" aria-hidden="true"></i>
+                <div>
+                    <strong>Ação Bloqueada:</strong> Este produto não pode ser excluído pois já faz parte do histórico de um pedido realizado.
+                    <br><small>Para manter a integridade das suas vendas, sugerimos <b>editar o produto e zerar o seu estoque</b>.</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        <% } else if (erro === 'nao_encontrado') { %>
+            <div class="alert alert-secondary alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+                <i class="fas fa-info-circle fa-2x me-3" aria-hidden="true"></i>
+                <div>
+                    <strong>Produto não encontrado:</strong> O produto que você tentou excluir não existe ou já foi removido.
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        <% } %>
+    <% } %>
+
+    <% if (typeof sucesso !== 'undefined' && sucesso === 'excluido') { %>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4 mb-4 d-flex align-items-center" role="alert">
+            <i class="fas fa-check-circle fa-2x me-3" aria-hidden="true"></i>
             <div>
-                <strong>Ação Bloqueada:</strong> Este produto não pode ser excluído pois já faz parte do histórico de um pedido realizado.
-                <br><small>Para manter a integridade das suas vendas, sugerimos <b>editar o produto e zerar o seu estoque</b>.</small>
+                <strong>Sucesso:</strong> Produto excluído permanentemente do sistema.
             </div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
         </div>
@@ -68,7 +115,7 @@
                                         </div>
                                         <div class="modal-body py-4">
                                             <p class="mb-0 text-wrap text-break">Tem certeza que deseja excluir o produto <strong><%= p.nome %></strong> (SKU: <%= p.sku %>)?</p>
-                                            <p class="text-muted small mt-2 mb-0">Esta ação não poderá ser desfeita. Se o produto já tiver vendas salvas, o sistema bloqueará a exclusão automaticamente.</p>
+                                            <p class="text-muted small mt-2 mb-0">Esta ação não poderá ser desfeita. O sistema verificará vendas, estoque e carrinhos antes de permitir a exclusão.</p>
                                         </div>
                                         <div class="modal-footer border-top-0 pt-0 mb-2">
                                             <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>

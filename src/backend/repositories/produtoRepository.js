@@ -71,6 +71,55 @@ class ProdutoRepository {
         return rows[0];
     }
 
+    /**
+     * Verifica se o produto possui vínculos que impedem a exclusão segura.
+     * Retorna um objeto com as dependências encontradas.
+     */
+    async verificarPossuiVinculos(id) {
+        const vinculos = {
+            possuiVendas: false,
+            possuiEstoque: false,
+            possuiCarrinho: false,
+            totalVendas: 0,
+            quantidadeEstoque: 0,
+            totalCarrinho: 0
+        };
+
+        // 1. Verificar vendas (itens_pedido)
+        const sqlVendas = `
+            SELECT COUNT(*) AS total
+            FROM itens_pedido
+            WHERE produto_id = $1;
+        `;
+        const resVendas = await pool.query(sqlVendas, [id]);
+        vinculos.totalVendas = parseInt(resVendas.rows[0].total, 10);
+        vinculos.possuiVendas = vinculos.totalVendas > 0;
+
+        // 2. Verificar estoque
+        const sqlEstoque = `
+            SELECT quantidade
+            FROM estoque
+            WHERE produto_id = $1;
+        `;
+        const resEstoque = await pool.query(sqlEstoque, [id]);
+        if (resEstoque.rows.length > 0) {
+            vinculos.quantidadeEstoque = resEstoque.rows[0].quantidade;
+            vinculos.possuiEstoque = vinculos.quantidadeEstoque > 0;
+        }
+
+        // 3. Verificar carrinho de compras
+        const sqlCarrinho = `
+            SELECT COUNT(*) AS total
+            FROM carrinho_itens
+            WHERE produto_id = $1;
+        `;
+        const resCarrinho = await pool.query(sqlCarrinho, [id]);
+        vinculos.totalCarrinho = parseInt(resCarrinho.rows[0].total, 10);
+        vinculos.possuiCarrinho = vinculos.totalCarrinho > 0;
+
+        return vinculos;
+    }
+
     async deletar(id) {
         const sql = `DELETE FROM produtos WHERE id = $1 RETURNING *`;
         const { rows } = await pool.query(sql, [id]);
