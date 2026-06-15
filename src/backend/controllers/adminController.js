@@ -32,11 +32,12 @@ exports.renderizarProdutos = async (req, res) => {
     try {
         const produtos = await ProdutoRepository.listarTodos();
         
-        // Captura o parâmetro '?erro=' da url
+        // Captura os parâmetros '?erro=' e '?sucesso=' da url
         const mensagemErro = req.query.erro;
+        const mensagemSucesso = req.query.sucesso;
 
 
-        res.render('admin_produtos', { produtos: produtos, erro: mensagemErro });
+        res.render('admin_produtos', { produtos: produtos, erro: mensagemErro, sucesso: mensagemSucesso });
     } catch (erro) {
         console.error("=== ERRO AO RENDERIZAR PRODUTOS ===", erro);
         res.status(500).json({ mensagem: 'Erro interno ao renderizar produtos.' });

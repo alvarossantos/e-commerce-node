@@ -12,6 +12,7 @@ exports.renderizarHome = async (req, res) => {
       produtos: produtos,
       termoBusca: busca || "",
       categoriaAtiva: categoria || "",
+      erro: req.query.erro || null,
     });
   } catch (erro) {
     console.error("=== ERRO AO RENDERIZAR HOME ===", erro);
@@ -41,6 +42,8 @@ exports.renderizarDetalheProduto = async (req, res) => {
       estatisticas: estatisticas,
       termoBusca: "",
       categoriaAtiva: "",
+      erro: req.query.erro || null,
+      sucesso: req.query.sucesso || null,
     });
   } catch (erro) {
     console.error("=== ERRO AO RENDERIZAR DETALHE DO PRODUTO ===", erro);

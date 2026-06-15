@@ -632,3 +632,11 @@ a { text-decoration: none; }
 
 /* ── Transições Alpine.js ─────────────────────────────────── */
 [x-cloak] { display: none !important; }
+
+/* ── Toast Transition Classes (Alpine.js) ─────────────────── */
+.ns-toast-enter { transition: opacity 0.3s ease-out, transform 0.3s ease-out; }
+.ns-toast-enter-start { opacity: 0; transform: translateY(8px); }
+.ns-toast-enter-end { opacity: 1; transform: translateY(0); }
+.ns-toast-leave { transition: opacity 0.2s ease-in, transform 0.2s ease-in; }
+.ns-toast-leave-start { opacity: 1; transform: translateY(0); }
+.ns-toast-leave-end { opacity: 0; transform: translateY(8px); }

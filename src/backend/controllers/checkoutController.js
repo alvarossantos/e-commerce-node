@@ -57,7 +57,9 @@ exports.renderizarCheckout = async (req, res) => {
             layout: 'layout_cliente', 
             itens: itensParaComprar, 
             total: valorTotal, 
-            enderecos: enderecos 
+            enderecos: enderecos,
+            erro: req.query.erro || null,
+            sucesso: req.query.sucesso || null,
         });
 
     } catch (erro) {

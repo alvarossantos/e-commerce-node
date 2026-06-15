@@ -1,5 +1,12 @@
 <div class="container py-5" x-data="{ buscaLocal: '<%= termoBusca.replace(/'/g, "\\'") %>' }">
     
+    <% if (typeof erro !== 'undefined' && erro) { %>
+        <div class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert">
+            <div class="d-flex align-items-center"><i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i><%= erro %></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    <% } %>
+
     <div class="d-flex flex-wrap gap-2 justify-content-center mb-5 scroll-categorias" role="navigation" aria-label="Categorias de produtos">
         <a href="/" class="cat-pill <%= categoriaAtiva === '' ? 'active' : '' %>" aria-label="Ver todas as categorias">
             <i class="fas fa-th-large me-2" aria-hidden="true"></i>Todas
@@ -64,3 +71,10 @@
         <% } %>
     </div>
 </div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('#conteudo-principal .alert[data-bs-dismiss="alert"]').forEach(el => {
+            bootstrap.Alert.getOrCreateInstance(el).close();
+        });
+    }, 5000);
+</script>

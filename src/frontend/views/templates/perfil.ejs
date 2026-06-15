@@ -1,7 +1,7 @@
 <div class="container py-5 font-custom">
 
-    <% if (erro) { %> <div class="alert alert-danger rounded-4 shadow-sm mb-4" role="alert"><%= erro %></div> <% } %>
-    <% if (sucesso) { %> <div class="alert alert-success rounded-4 shadow-sm mb-4" role="alert"><%= sucesso %></div> <% } %>
+    <% if (erro) { %> <div class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert"><%= erro %><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button></div> <% } %>
+    <% if (sucesso) { %> <div class="alert alert-success rounded-4 shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert"><%= sucesso %><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button></div> <% } %>
 
     <div class="row g-4">
         <div class="col-lg-5">
@@ -103,3 +103,10 @@
         </div>
     </div>
 </div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('#conteudo-principal .alert[data-bs-dismiss="alert"]').forEach(el => {
+            bootstrap.Alert.getOrCreateInstance(el).close();
+        });
+    }, 5000);
+</script>

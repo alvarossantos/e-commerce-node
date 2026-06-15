@@ -1,4 +1,16 @@
 <div class="container py-5 font-custom">
+    <% if (typeof erro !== 'undefined' && erro) { %>
+        <div class="alert alert-danger rounded-4 shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert">
+            <div class="d-flex align-items-center"><i class="fas fa-exclamation-circle me-2" aria-hidden="true"></i><%= erro %></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    <% } %>
+    <% if (typeof sucesso !== 'undefined' && sucesso) { %>
+        <div class="alert alert-success rounded-4 shadow-sm mb-4 d-flex justify-content-between align-items-center" role="alert">
+            <div class="d-flex align-items-center"><i class="fas fa-check-circle me-2" aria-hidden="true"></i><%= sucesso %></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+        </div>
+    <% } %>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="fw-bold mb-0 h3"><i class="fas fa-lock text-success me-2" aria-hidden="true"></i>Finalizar Compra</h1>
         <a href="/carrinho" class="btn btn-outline-secondary rounded-pill px-4"><i class="fas fa-arrow-left me-2" aria-hidden="true"></i> Voltar ao Carrinho</a>
@@ -172,3 +184,10 @@
         </div>
     </div>
 </div>
+<script>
+    setTimeout(() => {
+        document.querySelectorAll('#conteudo-principal .alert[data-bs-dismiss="alert"]').forEach(el => {
+            bootstrap.Alert.getOrCreateInstance(el).close();
+        });
+    }, 5000);
+</script>

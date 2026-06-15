@@ -83,7 +83,7 @@ exports.renderizarCarrinho = async (req, res) => {
                 }
             }
         }
-        res.render('carrinho', { layout: 'layout_cliente', itens: itensCarrinho, total: valorTotal });
+        res.render('carrinho', { layout: 'layout_cliente', itens: itensCarrinho, total: valorTotal, erro: req.query.erro || null });
     } catch (erro) {
         console.error("=== ERRO AO RENDERIZAR CARRINHO ===", erro);
         res.status(500).json({ mensagem: 'Erro interno ao renderizar carrinho.' });
