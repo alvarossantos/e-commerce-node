@@ -105,6 +105,13 @@ function csrfValidate(req, res, next) {
         return next();
     }
 
+    // Pula validação CSRF para rotas da API REST (JSON).
+    // A API é consumida por clientes programáticos que autenticam via JWT/Cookie,
+    // e não utilizam tokens CSRF em formulários HTML.
+    if (req.path.startsWith('/api/') || req.originalUrl.startsWith('/api/')) {
+        return next();
+    }
+
     // Pula validação CSRF para multipart/form-data (uploads de arquivo).
     // O req.body ainda não existe porque o Multer não processou a requisição.
     // A validação deve ser feita pelo csrfValidateAfterUpload nas rotas de upload.
