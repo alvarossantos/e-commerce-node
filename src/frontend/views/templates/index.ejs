@@ -1,4 +1,4 @@
-<div class="container py-5" x-data="{ buscaLocal: '<%= termoBusca %>'">
+<div class="container py-5" x-data="{ buscaLocal: '<%= termoBusca.replace(/'/g, "\\'") %>' }">
     
     <div class="d-flex flex-wrap gap-2 justify-content-center mb-5 scroll-categorias" role="navigation" aria-label="Categorias de produtos">
         <a href="/" class="cat-pill <%= categoriaAtiva === '' ? 'active' : '' %>" aria-label="Ver todas as categorias">
@@ -37,7 +37,7 @@
                     <div class="p-4 d-flex align-items-center justify-content-center bg-white position-relative rounded-top-4" style="height: 200px;">
                         <img src="<%= p.url_imagem ? p.url_imagem : '/img/produtos/placeholder.png' %>" class="img-fluid" style="max-height: 100%; object-fit: contain;" alt="Imagem de <%= p.nome %>">
                         <button type="button" class="btn-favorito position-absolute top-0 end-0 m-2" @click="$el.classList.toggle('active')" :title="$el.classList.contains('active') ? 'Remover dos favoritos' : 'Adicionar aos favoritos'" :aria-label="$el.classList.contains('active') ? 'Remover <%= p.nome %> dos favoritos' : 'Adicionar <%= p.nome %> aos favoritos'">
-                            <i class="fa-heart" :class="$el.parentElement.querySelector('button').classList.contains('active') ? 'fas text-danger' : 'far text-muted'" aria-hidden="true"></i>
+                            <i class="fa-heart" :class="$el.parentElement.classList.contains('active') ? 'fas text-danger' : 'far text-muted'" aria-hidden="true"></i>
                         </button>
                     </div>
                     <div class="card-body d-flex flex-column border-top bg-white rounded-bottom-4">
