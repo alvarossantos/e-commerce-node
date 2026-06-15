@@ -56,6 +56,18 @@ class UsuarioRepository {
         return rows[0];
     }
 
+    async atualizarUsuario(dados) {
+        const sql = `
+            UPDATE usuarios 
+            SET nome = $1, telefone = $2, senha_hash = $3
+            WHERE id = $4 
+            RETURNING id, nome, email, cpf, data_nascimento, telefone, url_foto, criado_em, ativo, is_admin;
+        `;
+        const params = [dados.nome, dados.telefone, dados.senha_hash, dados.id];
+        const { rows } = await pool.query(sql, params);
+        return rows[0];
+    }
+
     async atualizarFoto(id, url_foto) {
         const sql = `
             UPDATE usuarios 

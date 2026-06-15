@@ -77,7 +77,7 @@ function csrfValidate(req, res, next) {
         return next();
     }
 
-    const token = req.body._csrf || req.headers['x-csrf-token'];
+    const token = (req.body && req.body._csrf) || req.headers['x-csrf-token'];
     const sessionId = req.cookies.session_id;
 
     if (!token || !sessionId) {
@@ -89,7 +89,9 @@ function csrfValidate(req, res, next) {
     }
 
     // Remove o _csrf do body para não poluir os controllers
-    delete req.body._csrf;
+    if (req.body) {
+        delete req.body._csrf;
+    }
     next();
 }
 

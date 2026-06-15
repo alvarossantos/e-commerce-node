@@ -3,9 +3,8 @@
 #
 #  O QUE FAZ:
 #    1. Roda os testes automatizados em todo push/PR
-#    2. Verifica formatação e lint do código
-#    3. Faz o build da imagem Docker (em push na main)
-#    4. Publica a imagem no GitHub Container Registry (ghcr.io)
+#    2. Faz o build da imagem Docker (em push na main)
+#    3. Publica a imagem no GitHub Container Registry (ghcr.io)
 #
 #  CONFIGURAR antes de usar:
 #    Não é necessário configurar secrets para os steps 1-3.

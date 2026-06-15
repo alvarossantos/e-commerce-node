@@ -4,6 +4,7 @@ class ProdutoRepository {
     async criar(produto, quantidadeInicial = 0) {
         const client = await pool.connect();
         try {
+            await client.query('BEGIN');
             const sqlProduto = `
                 INSERT INTO produtos (nome, sku, preco, descricao, codigo_barras, categoria, url_imagem)
                 VALUES ($1, $2, $3, $4, $5, $6, $7)

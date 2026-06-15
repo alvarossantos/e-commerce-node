@@ -5,13 +5,13 @@ const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
+    password: process.env.DB_PASS,
     port: process.env.DB_PORT,
 });
 
 // Testar conexão assim que for carregado
 pool.on('connect', () => {
-    console.log('Conectado ao banco de dados PosrgreSQL com sucesso!');
+    console.log('Conectado ao banco de dados PostgreSQL com sucesso!');
 });
 
 pool.on('error', (err) => {

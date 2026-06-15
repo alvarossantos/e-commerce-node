@@ -4,7 +4,7 @@ const ProdutoRepository = require('../repositories/produtoRepository');
 exports.adicionarItem = async (req, res) => {
     try {
         const produtoId = req.body.produto_id || req.body.produtoId;
-        const quantidade = parseInt(req.body.quantidade) || 1;
+        const quantidade = Math.max(1, parseInt(req.body.quantidade) || 1);
 
         if (!produtoId) {
             return res.redirect('/?erro=Erro ao identificar o produto. Tente novamente.');
