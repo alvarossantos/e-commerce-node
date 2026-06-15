@@ -7,7 +7,7 @@ class Produto {
         this.descricao = descricao;
         this.codigo_barras = codigo_barras;
         this.categoria = categoria;
-        this.url_imagem = url_imagem || '/static/img/produtos/placeholder.png';
+        this.url_imagem = url_imagem || '/img/produtos/placeholder.png';
     }
 }
 

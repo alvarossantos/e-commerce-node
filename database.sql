@@ -18,7 +18,7 @@ CREATE TABLE usuarios (
     cpf VARCHAR(11) UNIQUE NOT NULL,        -- CPF (apenas números)
     data_nascimento DATE NOT NULL,           -- Data de nascimento (AAAA-MM-DD)
     telefone VARCHAR(15),                   -- Formatos como (11) 99999-9999
-    url_foto TEXT DEFAULT '/static/img/usuarios/default.png',
+    url_foto TEXT DEFAULT '/img/usuarios/default.png',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data de registro
     ativo BOOLEAN DEFAULT TRUE,               -- Define se o usuário pode logar
     is_admin BOOLEAN DEFAULT FALSE
