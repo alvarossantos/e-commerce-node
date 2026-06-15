@@ -557,7 +557,14 @@ a { text-decoration: none; }
 .ns-toast {
     font-family: var(--ns-font);
     border: none;
-    animation: ns-toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ns-toast .btn-close {
+    filter: none;
+    opacity: 0.5;
+    padding: 0.25rem;
+}
+.ns-toast .btn-close:hover {
+    opacity: 1;
 }
 .ns-toast-success {
     background-color: #f0fdf4;

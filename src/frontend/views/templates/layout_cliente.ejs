@@ -148,6 +148,7 @@
                 totalItens: parseInt('<%= typeof totalItensCarrinho !== "undefined" ? totalItensCarrinho : 0 %>') || 0,
                 notificacao: null,
                 notificacaoTipo: 'success',
+                _notificacaoTimer: null,
 
                 async init() {
                     await this.atualizarContadorCarrinho();
@@ -205,17 +206,35 @@
                 },
 
                 mostrarNotificacao(mensagem, tipo = 'success') {
-                    this.notificacao = mensagem;
-                    this.notificacaoTipo = tipo;
-                    setTimeout(() => { this.notificacao = null; }, 3000);
+                    var self = this;
+                    // Limpa timer anterior para evitar conflitos
+                    if (self._notificacaoTimer) {
+                        clearTimeout(self._notificacaoTimer);
+                        self._notificacaoTimer = null;
+                    }
+                    self.notificacao = mensagem;
+                    self.notificacaoTipo = tipo;
+                    self._notificacaoTimer = setTimeout(function () {
+                        self.notificacao = null;
+                        self._notificacaoTimer = null;
+                    }, 3000);
+                },
+
+                fecharNotificacao() {
+                    if (this._notificacaoTimer) {
+                        clearTimeout(this._notificacaoTimer);
+                        this._notificacaoTimer = null;
+                    }
+                    this.notificacao = null;
                 }
             };
         }
     </script>
     <!-- Toast Notificação Alpine.js -->
-    <div x-show="notificacao" x-transition:enter="ns-toast-enter" x-transition:enter-start="ns-toast-enter-start" x-transition:enter-end="ns-toast-enter-end" x-transition:leave="ns-toast-leave" x-transition:leave-start="ns-toast-leave-start" x-transition:leave-end="ns-toast-leave-end" :class="notificacaoTipo === 'success' ? 'ns-toast-success' : 'ns-toast-danger'" class="ns-toast position-fixed bottom-0 end-0 m-4 px-4 py-3 rounded-4 shadow-lg d-flex align-items-center gap-3" style="z-index: 9999; min-width: 300px;" role="alert" aria-live="polite">
+    <div x-cloak x-show="notificacao" x-transition:enter="ns-toast-enter" x-transition:enter-start="ns-toast-enter-start" x-transition:enter-end="ns-toast-enter-end" x-transition:leave="ns-toast-leave" x-transition:leave-start="ns-toast-leave-start" x-transition:leave-end="ns-toast-leave-end" :class="notificacaoTipo === 'success' ? 'ns-toast-success' : 'ns-toast-danger'" class="ns-toast position-fixed bottom-0 end-0 m-4 px-4 py-3 rounded-4 shadow-lg d-flex align-items-center gap-3" style="z-index: 9999; min-width: 300px;" role="alert" aria-live="polite">
         <i :class="notificacaoTipo === 'success' ? 'fas fa-check-circle text-success' : 'fas fa-exclamation-circle text-danger'" aria-hidden="true"></i>
         <span class="fw-bold small" x-text="notificacao"></span>
+        <button type="button" class="btn-close btn-close-sm ms-2" @click="fecharNotificacao()" aria-label="Fechar"></button>
     </div>
 
 </body>
