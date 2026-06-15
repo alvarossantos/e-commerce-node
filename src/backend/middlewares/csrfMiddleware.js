@@ -69,7 +69,35 @@ function csrfGenerate(req, res, next) {
 }
 
 /**
- * Middleware que valida o token CSRF em requisições POST/PUT/PATCH/DELETE
+ * Middleware interno que extrai e valida o token CSRF de uma requisição.
+ * Retorna true se válido, false caso contrário.
+ */
+function _validateCsrf(req, res) {
+    const token = (req.body && req.body._csrf) || req.headers['x-csrf-token'];
+    const sessionId = req.cookies.session_id;
+
+    if (!token || !sessionId) {
+        res.status(403).json({ mensagem: 'Token CSRF ausente.' });
+        return false;
+    }
+
+    if (!validateToken(token, sessionId)) {
+        res.status(403).json({ mensagem: 'Token CSRF inválido ou expirado.' });
+        return false;
+    }
+
+    // Remove o _csrf do body para não poluir os controllers
+    if (req.body) {
+        delete req.body._csrf;
+    }
+
+    return true;
+}
+
+/**
+ * Middleware que valida o token CSRF em requisições POST/PUT/PATCH/DELETE.
+ * Pula automaticamente requisições multipart/form-data (uploads),
+ * que devem ser validadas pelo csrfValidateAfterUpload.
  */
 function csrfValidate(req, res, next) {
     // Só valida em métodos que modificam dados
@@ -77,22 +105,26 @@ function csrfValidate(req, res, next) {
         return next();
     }
 
-    const token = (req.body && req.body._csrf) || req.headers['x-csrf-token'];
-    const sessionId = req.cookies.session_id;
-
-    if (!token || !sessionId) {
-        return res.status(403).json({ mensagem: 'Token CSRF ausente.' });
+    // Pula validação CSRF para multipart/form-data (uploads de arquivo).
+    // O req.body ainda não existe porque o Multer não processou a requisição.
+    // A validação deve ser feita pelo csrfValidateAfterUpload nas rotas de upload.
+    const contentType = req.headers['content-type'] || '';
+    if (contentType.includes('multipart/form-data')) {
+        return next();
     }
 
-    if (!validateToken(token, sessionId)) {
-        return res.status(403).json({ mensagem: 'Token CSRF inválido ou expirado.' });
-    }
-
-    // Remove o _csrf do body para não poluir os controllers
-    if (req.body) {
-        delete req.body._csrf;
-    }
+    if (!_validateCsrf(req, res)) return;
     next();
 }
 
-module.exports = { csrfGenerate, csrfValidate };
+/**
+ * Middleware para validar CSRF em rotas com upload de arquivo (multipart/form-data).
+ * DEVE ser usado DEPOIS do Multer (ex: upload.single('campo')), pois só então
+ * o req.body estará disponível com o campo _csrf do formulário.
+ */
+function csrfValidateAfterUpload(req, res, next) {
+    if (!_validateCsrf(req, res)) return;
+    next();
+}
+
+module.exports = { csrfGenerate, csrfValidate, csrfValidateAfterUpload };
