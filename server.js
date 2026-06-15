@@ -54,7 +54,7 @@ if (process.env.NODE_ENV !== 'test') {
     app.use(csrfValidate);
 }
 
-// Rotas
+// ── Rotas EJS (Server-Side Rendering) ──────────────────────
 app.use('/', lojaRoutes);
 app.use('/', authRoutes);
 
@@ -68,6 +68,21 @@ app.use('/carrinho', carrinhoRoutes);
 app.use('/checkout', checkoutRoutes);
 
 app.use('/admin', verificarAdmin, adminRoutes);
+
+// ── API REST (JSON) ────────────────────────────────────────
+const apiLojaRoutes = require('./src/backend/routes/api/lojaApiRoutes');
+const apiProdutosRoutes = require('./src/backend/routes/api/produtosApiRoutes');
+const apiCarrinhoRoutes = require('./src/backend/routes/api/carrinhoApiRoutes');
+const apiAuthRoutes = require('./src/backend/routes/api/authApiRoutes');
+const apiPedidosRoutes = require('./src/backend/routes/api/pedidosApiRoutes');
+const apiUsuariosRoutes = require('./src/backend/routes/api/usuariosApiRoutes');
+
+app.use('/api/loja', apiLojaRoutes);
+app.use('/api/produtos', apiProdutosRoutes);
+app.use('/api/carrinho', apiCarrinhoRoutes);
+app.use('/api/auth', apiAuthRoutes);
+app.use('/api/pedidos', apiPedidosRoutes);
+app.use('/api/usuarios', apiUsuariosRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {

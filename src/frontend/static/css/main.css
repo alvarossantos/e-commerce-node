@@ -548,3 +548,87 @@ a { text-decoration: none; }
     .navbar, .footer, .skip-link, .btn { display: none !important; }
     .card { box-shadow: none !important; border: 1px solid #ddd !important; }
 }
+
+/* ════════════════════════════════════════════════════════════
+   NexStore — Alpine.js & Microinteratividade
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Toast Notificação ────────────────────────────────────── */
+.ns-toast {
+    font-family: var(--ns-font);
+    border: none;
+    animation: ns-toast-in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ns-toast-success {
+    background-color: #f0fdf4;
+    border-left: 4px solid #22c55e;
+    color: #166534;
+}
+.ns-toast-danger {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+}
+
+@keyframes ns-toast-in {
+    0% { opacity: 0; transform: translateY(20px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Botão Favorito ───────────────────────────────────────── */
+.btn-favorito {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 2;
+}
+.btn-favorito:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.btn-favorito:focus-visible {
+    outline: 3px solid var(--ns-primary);
+    outline-offset: 2px;
+}
+.btn-favorito.active {
+    background: #fef2f2;
+}
+
+/* ── Quantity Selector ────────────────────────────────────── */
+.input-group .btn-outline-secondary {
+    color: var(--ns-dark);
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.input-group .btn-outline-secondary:hover {
+    background: var(--ns-primary);
+    color: #fff;
+    border-color: var(--ns-primary);
+}
+.input-group .form-control[readonly] {
+    background: transparent;
+    cursor: default;
+}
+
+/* ── Skeleton Loading (utilitário) ────────────────────────── */
+.ns-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: ns-skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: 8px;
+}
+
+@keyframes ns-skeleton-pulse {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Transições Alpine.js ─────────────────────────────────── */
+[x-cloak] { display: none !important; }

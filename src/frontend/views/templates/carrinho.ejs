@@ -1,4 +1,4 @@
-<div class="container py-5 font-custom">
+<div class="container py-5 font-custom" x-data="carrinhoApp()">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="fw-bold mb-0 h3"><i class="fas fa-shopping-cart text-primary me-2" aria-hidden="true"></i>Seu Carrinho de Compras</h1>
         
@@ -32,7 +32,7 @@
                                     <% for(let item of itens) { 
                                         let subtotal = parseFloat(item.preco) * item.quantidade;
                                     %>
-                                        <tr>
+                                        <tr x-data="{ removendo: false }" :class="removendo && 'opacity-50'">
                                             <td>
                                                 <input class="form-check-input item-checkbox fs-5" type="checkbox" 
                                                        name="produtosSelecionados" value="<%= item.produto_id %>" 
@@ -52,7 +52,7 @@
                                             <td class="text-end fw-bold text-success">R$ <%= subtotal.toFixed(2) %></td>
                                             
                                             <td class="text-end">
-                                                <button type="submit" formaction="/carrinho/remover/<%= item.produto_id %>" formmethod="POST" class="btn btn-sm btn-outline-danger border-0" title="Remover <%= item.nome %>">
+                                                <button type="button" class="btn btn-sm btn-outline-danger border-0" title="Remover <%= item.nome %>" @click="removendo = true; $dispatch('remover-item', { produtoId: '<%= item.produto_id %>' })" :disabled="removendo">
                                                     <i class="fas fa-trash" aria-hidden="true"></i>
                                                 </button>
                                             </td>
@@ -131,6 +131,32 @@
 </div>
 
 <script>
+    function carrinhoApp() {
+        return {
+            init() {
+                this.$el.addEventListener('remover-item', async (e) => {
+                    const { produtoId } = e.detail;
+                    try {
+                        const resp = await fetch('/api/carrinho/remover/' + produtoId, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const data = await resp.json();
+                        if (data.sucesso) {
+                            // Atualiza o badge do layout
+                            if (window.Alpine) {
+                                const app = document.querySelector('[x-data]').__x;
+                            }
+                            location.reload();
+                        }
+                    } catch (err) {
+                        location.reload();
+                    }
+                });
+            }
+        };
+    }
+
     function atualizarTotalDinâmico() {
         let total = 0;
         let selecionados = 0;

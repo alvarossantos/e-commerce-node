@@ -38,9 +38,15 @@ Além disso, o projeto adota práticas avançadas de engenharia de software, inc
 
 **Front-end:**
 * **EJS:** Motor de templates dinâmicos com layouts separados (admin/cliente).
+* **Alpine.js:** Microinteratividade reativa (contador de carrinho, favoritos, quantity selector).
 * **Bootstrap 5.3:** Interface responsiva (Mobile-First) e moderna.
 * **Font Awesome 6:** Ícones vetoriais.
 * **CSS Customizado:** Arquivo externo `main.css` com design system consistente.
+
+**API REST:**
+* **Endpoints JSON:** API completa sob `/api/` para integrações futuras (mobile, SPA).
+* **Rotas públicas:** Catálogo, detalhe de produtos, vitrine.
+* **Rotas autenticadas:** Carrinho, pedidos, perfil, endereços.
 
 **Segurança:**
 * **CSRF Protection:** Middleware HMAC-SHA256 com tokens por sessão.
@@ -66,7 +72,8 @@ Além disso, o projeto adota práticas avançadas de engenharia de software, inc
  ┃ ┃ ┣ 📂 middlewares        # Auth (JWT), CSRF, Upload (Multer), Carrinho
  ┃ ┃ ┣ 📂 models            # Modelo de dados (Produto, Usuario)
  ┃ ┃ ┣ 📂 repositories      # Queries SQL parametrizadas (7 repositories)
- ┃ ┃ ┗ 📂 routes            # Definição de endpoints (11 arquivos)
+ ┃ ┃ ┗ 📂 routes            # Definição de rotas EJS (11 arquivos)
+ ┃ ┃   ┗ 📂 api             # API REST — rotas JSON (6 arquivos)
  ┃ ┗ 📂 frontend
  ┃ ┃ ┣ 📂 static
  ┃ ┃ ┃ ┣ 📂 css/            # CSS externo consolidado (main.css)
@@ -206,23 +213,77 @@ npm run test:coverage     # Relatório de cobertura
 
 ## 📚 8. Documentação da API
 
-Toda a documentação dos *endpoints*, modelos de dados, rotas de administrador e fluxos de checkout está detalhada visualmente em:
+Toda a documentação dos *endpoints* HTML/EJS está detalhada visualmente em:
 
 👉 `docs/api.html` — abra diretamente no navegador.
 
 ---
 
-## 📊 9. Resumo Técnico
+## 🔌 9. API REST (JSON)
+
+A partir da versão 1.3.0, o NexStore disponibiliza uma API REST completa sob o prefixo `/api/`. Esta API pode ser consumida por clientes mobile, SPAs ou qualquer outro frontend.
+
+### Autenticação
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `POST` | `/api/auth/login` | Login (retorna JWT no cookie) | Não |
+| `POST` | `/api/auth/cadastro` | Cadastro de novo usuário | Não |
+| `POST` | `/api/auth/logout` | Logout (limpa cookie) | Não |
+| `GET`  | `/api/auth/me` | Dados do usuário logado | Opcional |
+
+### Produtos & Catálogo
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/api/loja/vitrine` | Produtos da vitrine (busca + categoria) | Não |
+| `GET` | `/api/loja/produtos/:id` | Detalhe completo do produto | Não |
+| `GET` | `/api/produtos` | Listar todos os produtos | Não |
+| `GET` | `/api/produtos/:id` | Buscar produto por ID | Não |
+| `POST` | `/api/produtos` | Criar produto | Admin |
+| `PUT` | `/api/produtos/:id` | Atualizar produto | Admin |
+| `DELETE` | `/api/produtos/:id` | Deletar produto | Admin |
+
+### Carrinho de Compras
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/api/carrinho` | Listar itens do carrinho | Opcional |
+| `POST` | `/api/carrinho/adicionar` | Adicionar item ao carrinho | Opcional |
+| `POST` | `/api/carrinho/remover/:id` | Remover item do carrinho | Opcional |
+| `POST` | `/api/carrinho/limpar` | Esvaziar carrinho | Opcional |
+
+### Pedidos
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/api/pedidos` | Listar pedidos do usuário | Sim |
+| `GET` | `/api/pedidos/:id` | Detalhe de um pedido | Sim |
+
+### Usuários & Perfil
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/api/usuarios/me` | Dados completos do perfil | Sim |
+| `GET` | `/api/usuarios/me/enderecos` | Endereços do usuário | Sim |
+
+> **Formato de resposta:** Todas as rotas retornam JSON no padrão `{ sucesso: true/false, ... }`.
+
+---
+
+## 📊 10. Resumo Técnico
 
 | Aspecto | Detalhe |
 |---------|---------|
 | **Nome** | NexStore |
-| **Versão** | 1.2.0 |
+| **Versão** | 1.3.0 |
 | **Autor** | Álvaro Santos |
-| **Arquitetura** | MVC + Repository Pattern |
+| **Arquitetura** | MVC + Repository Pattern + API REST |
 | **Backend** | Express.js 5 + Node.js 20 |
 | **Banco** | PostgreSQL 16 (pool de conexões) |
 | **Template Engine** | EJS com layouts separados |
+| **Frontend Interativo** | Alpine.js (microinteratividade reativa) |
+| **API REST** | 6 routers JSON (`/api/*`) — 15+ endpoints |
 | **Autenticação** | JWT (cookies httpOnly, 24h) |
 | **Senhas** | Bcrypt (salt 10) |
 | **Upload** | Multer (memory) + Sharp (WebP) |
@@ -231,7 +292,7 @@ Toda a documentação dos *endpoints*, modelos de dados, rotas de administrador 
 | **Testes** | 34 testes (Jest + Supertest) |
 | **CI/CD** | GitHub Actions (testes + Docker build) |
 | **Containerização** | Docker multi-stage (Alpine) |
-| **Frontend** | Bootstrap 5.3 + CSS customizado externo |
+| **Frontend** | Bootstrap 5.3 + Alpine.js + CSS customizado |
 | **Módulos** | CommonJS |
 
 ---

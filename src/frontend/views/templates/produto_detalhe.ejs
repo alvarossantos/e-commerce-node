@@ -68,18 +68,31 @@
                     </div>
                 </div>
 
-                <form action="/carrinho/adicionar" method="POST">
+                <form action="/carrinho/adicionar" method="POST" x-data="{ qtd: 1, maxQtd: <%= estoque ? estoque.quantidade : 0 %>, adicionando: false }" @submit.prevent="adicionarAoCarrinho(<%= produto.id %>, qtd); adicionando = true; setTimeout(() => adicionando = false, 1500)">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                     <input type="hidden" name="produto_id" value="<%= produto.id %>">
                     <div class="d-flex align-items-center gap-3">
-                        <div style="width: 100px;">
+                        <div style="width: 130px;">
                             <label for="quantidade-produto" class="form-label text-muted small mb-1">Quantidade</label>
-                            <input type="number" id="quantidade-produto" name="quantidade" class="form-control text-center rounded-pill fw-bold" value="1" min="1" max="<%= estoque ? estoque.quantidade : 1 %>" required>
+                            <div class="input-group rounded-pill border shadow-sm">
+                                <button type="button" class="btn btn-outline-secondary border-0" @click="qtd = Math.max(1, qtd - 1)" aria-label="Diminuir quantidade">
+                                    <i class="fas fa-minus small" aria-hidden="true"></i>
+                                </button>
+                                <input type="number" id="quantidade-produto" name="quantidade" class="form-control text-center border-0 fw-bold" x-model.number="qtd" min="1" :max="maxQtd" required readonly style="max-width: 50px;">
+                                <button type="button" class="btn btn-outline-secondary border-0" @click="qtd = Math.min(maxQtd, qtd + 1)" aria-label="Aumentar quantidade">
+                                    <i class="fas fa-plus small" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="flex-grow-1 pt-4">
                             <% if (estoque && estoque.quantidade > 0) { %>
-                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold py-2.5 shadow-sm btn-comprar transition-hover-sm">
-                                    <i class="fas fa-shopping-bag me-2" aria-hidden="true"></i> Adicionar ao Carrinho
+                                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold py-2.5 shadow-sm btn-comprar transition-hover-sm" :disabled="adicionando" :class="adicionando && 'opacity-75'">
+                                    <template x-if="!adicionando">
+                                        <span><i class="fas fa-shopping-bag me-2" aria-hidden="true"></i> Adicionar ao Carrinho</span>
+                                    </template>
+                                    <template x-if="adicionando">
+                                        <span><i class="fas fa-check me-2" aria-hidden="true"></i> Adicionado!</span>
+                                    </template>
                                 </button>
                             <% } else { %>
                                 <button type="button" class="btn btn-secondary btn-lg w-100 rounded-pill fw-bold py-2.5" disabled>
@@ -88,6 +101,9 @@
                             <% } %>
                         </div>
                     </div>
+                    <% if (estoque && estoque.quantidade > 0 && estoque.quantidade <= 5) { %>
+                        <p class="text-danger small mt-2 mb-0 fw-bold"><i class="fas fa-fire me-1" aria-hidden="true"></i> Últimas <%= estoque.quantidade %> unidades!</p>
+                    <% } %>
                 </form>
             </div>
         </div>
