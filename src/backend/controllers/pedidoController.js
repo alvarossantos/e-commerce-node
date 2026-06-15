@@ -64,7 +64,12 @@ exports.meusPedidos = async (req, res) => {
 exports.listarTodos = async (req, res) => {
     try {
         const pedidos = await PedidoRepository.listarTodos();
-        res.render('admin_pedidos', { layout: 'layout', pedidos });
+        res.render('admin_pedidos', {
+            layout: 'layout',
+            pedidos,
+            sucesso: req.query.sucesso || null,
+            erro: req.query.erro || null
+        });
     } catch (erro) {
         console.error("=== ERRO AO LISTAR TODOS OS PEDIDOS ===", erro);
         res.status(500).send('Erro interno ao listar pedidos.');

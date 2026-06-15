@@ -46,7 +46,12 @@ exports.renderizarProdutos = async (req, res) => {
 exports.renderizarPedidos = async (req, res) => {
     try {
         const pedidos = await PedidoRepository.listarTodos();
-        res.render('admin_pedidos', { pedidos: pedidos });
+        res.render('admin_pedidos', {
+            layout: 'layout',
+            pedidos: pedidos,
+            sucesso: req.query.sucesso || null,
+            erro: req.query.erro || null
+        });
     } catch (erro) {
         console.error("=== ERRO AO RENDERIZAR PEDIDOS ===", erro);
         res.status(500).json({ mensagem: 'Erro interno ao renderizar pedidos.' });
@@ -151,7 +156,7 @@ exports.excluirProduto = async (req, res) => {
 
         // 3. Se não há vínculos, prosseguir com a exclusão
         await ProdutoRepository.deletar(id);
-        res.redirect('/admin/produtos?sucesso=excluido');
+        res.redirect('/admin/produtos?sucesso=Produto excluído com sucesso!');
     } catch (erro) {
         console.error("=== ERRO AO EXCLUIR PRODUTO ===", erro);
         
