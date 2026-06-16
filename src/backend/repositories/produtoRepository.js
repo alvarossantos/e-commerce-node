@@ -128,23 +128,30 @@ class ProdutoRepository {
     }
 
     async buscarVitrine(busca = null, categoria = null) {
-        let sql = `SELECT * FROM produtos WHERE 1=1`;
+        let sql = `
+            SELECT p.*, 
+                   COALESCE(e.quantidade, 0) AS quantidade_estoque,
+                   CASE WHEN COALESCE(e.quantidade, 0) <= 0 THEN true ELSE false END AS esgotado
+            FROM produtos p
+            LEFT JOIN estoque e ON p.id = e.produto_id
+            WHERE 1=1
+        `;
         const params = [];
         let contador = 1;
 
         if (categoria) {
-            sql += ` AND categoria = $${contador}`;
+            sql += ` AND p.categoria = $${contador}`;
             params.push(categoria);
             contador++;
         }
 
         if (busca) {
-            sql += ` AND (nome ILIKE $${contador} OR descricao ILIKE $${contador})`;
+            sql += ` AND (p.nome ILIKE $${contador} OR p.descricao ILIKE $${contador})`;
             params.push(`%${busca}%`);
             contador++;
         }
 
-        sql += ` ORDER BY id DESC`;
+        sql += ` ORDER BY p.id DESC`;
 
         const { rows } = await pool.query(sql, params);
         return rows;
