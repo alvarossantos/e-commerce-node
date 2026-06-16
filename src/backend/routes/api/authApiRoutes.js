@@ -4,13 +4,8 @@
  */
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const UsuarioRepository = require('../../repositories/usuarioRepository');
-const CarrinhoRepository = require('../../repositories/carrinhoRepository');
+const AuthService = require('../../services/authService');
 const { verificarLogadoOpcional } = require('../../middlewares/authMiddleware');
-
-const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
 
 // POST /api/auth/login — Fazer login
 router.post('/login', async (req, res) => {
@@ -21,44 +16,12 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ sucesso: false, mensagem: 'E-mail e senha são obrigatórios.' });
         }
 
-        const usuario = await UsuarioRepository.buscarPorEmail(email);
+        const usuario = await AuthService.validarCredenciais(email, senha);
+        const token = AuthService.gerarToken(usuario);
 
-        if (!usuario || !usuario.senha_hash) {
-            return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos.' });
-        }
+        res.cookie('token', token, AuthService.cookieOptions());
 
-        const senhaValida = await bcrypt.compare(senha, usuario.senha_hash);
-        if (!senhaValida) {
-            return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos.' });
-        }
-
-        // Verifica se a conta está ativa
-        if (usuario.ativo === false) {
-            return res.status(403).json({ sucesso: false, mensagem: 'Conta desativada. Entre em contato com o suporte.' });
-        }
-
-        const token = jwt.sign({
-            id: usuario.id,
-            nome: usuario.nome,
-            is_admin: usuario.is_admin,
-            url_foto: usuario.url_foto
-        }, SECRET, { expiresIn: '24h' });
-
-        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
-
-        // Migrar carrinho do visitante para o banco
-        if (req.cookies.carrinho_visitante) {
-            let carrinhoVisitante = [];
-            try {
-                carrinhoVisitante = JSON.parse(req.cookies.carrinho_visitante);
-                if (!Array.isArray(carrinhoVisitante)) carrinhoVisitante = [];
-            } catch (e) { carrinhoVisitante = []; }
-
-            for (let item of carrinhoVisitante) {
-                await CarrinhoRepository.adicionarItem(usuario.id, item.produtoId, item.quantidade);
-            }
-            res.clearCookie('carrinho_visitante');
-        }
+        await AuthService.migrarCarrinhoVisitante(usuario.id, req.cookies, (c) => res.clearCookie(c));
 
         res.json({
             sucesso: true,
@@ -68,12 +31,20 @@ router.post('/login', async (req, res) => {
                 nome: usuario.nome,
                 email: usuario.email,
                 is_admin: usuario.is_admin,
-                url_foto: usuario.url_foto
-            }
+                url_foto: usuario.url_foto,
+            },
         });
     } catch (erro) {
         console.error('=== API ERRO AO FAZER LOGIN ===', erro);
-        res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao fazer login.' });
+
+        const mapaStatus = {
+            CREDENCIAIS_INVALIDAS: 401,
+            CONTA_INATIVA: 403,
+        };
+        const status = mapaStatus[erro.tipo] || 500;
+        const mensagem = erro.mensagem || 'Erro interno ao fazer login.';
+
+        res.status(status).json({ sucesso: false, mensagem });
     }
 });
 
@@ -82,44 +53,24 @@ router.post('/cadastro', async (req, res) => {
     try {
         const { nome, email, senha, cpf, data_nascimento } = req.body;
 
-        if (!email || !email.includes('@')) {
-            return res.status(400).json({ sucesso: false, mensagem: 'Por favor, insira um e-mail válido.' });
-        }
-
-        const cpfLimpo = cpf ? cpf.replace(/\D/g, '') : '';
-        if (cpfLimpo.length !== 11) {
-            return res.status(400).json({ sucesso: false, mensagem: 'O CPF deve conter exatamente 11 números.' });
-        }
-
-        const usuarioExistente = await UsuarioRepository.buscarPorEmail(email);
-        if (usuarioExistente) {
-            return res.status(400).json({ sucesso: false, mensagem: 'Este e-mail já está em uso.' });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const senhaCriptografada = await bcrypt.hash(senha, salt);
-
-        const novoUsuario = {
-            nome,
-            email,
-            senha_hash: senhaCriptografada,
-            cpf: cpfLimpo,
-            data_nascimento,
-            telefone: null,
-            url_foto: '/img/usuarios/default.png',
-            ativo: true,
-            is_admin: false
-        };
-
-        await UsuarioRepository.criar(novoUsuario);
+        await AuthService.cadastrarUsuario({ nome, email, senha, cpf, data_nascimento });
 
         res.status(201).json({ sucesso: true, mensagem: 'Cadastro realizado com sucesso!' });
     } catch (erro) {
         console.error('=== API ERRO AO FAZER CADASTRO ===', erro);
-        if (erro.code === '23505') {
-            return res.status(400).json({ sucesso: false, mensagem: 'E-mail ou CPF já cadastrados.' });
+
+        if (erro.tipo === 'EMAIL_DUPLICADO') {
+            return res.status(400).json({ sucesso: false, mensagem: erro.mensagem });
         }
-        res.status(500).json({ sucesso: false, mensagem: 'Erro interno ao fazer cadastro.' });
+
+        const mapaStatus = {
+            EMAIL_INVALIDO: 400,
+            CPF_INVALIDO: 400,
+        };
+        const status = mapaStatus[erro.tipo] || 500;
+        const mensagem = erro.mensagem || 'Erro interno ao fazer cadastro.';
+
+        res.status(status).json({ sucesso: false, mensagem });
     }
 });
 
@@ -141,8 +92,8 @@ router.get('/me', verificarLogadoOpcional, (req, res) => {
             id: req.usuarioLogado.id,
             nome: req.usuarioLogado.nome,
             is_admin: req.usuarioLogado.is_admin,
-            url_foto: req.usuarioLogado.url_foto
-        }
+            url_foto: req.usuarioLogado.url_foto,
+        },
     });
 });
 

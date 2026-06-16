@@ -35,6 +35,9 @@ e adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 - README atualizado com variável `DB_PASS` correta
 - Removida dependência morta `express-session`
 
+### Alterado
+- Lógica de autenticação (login, cadastro, JWT, merge de carrinho) extraída para `authService.js` — elimina duplicação entre `authController.js` e `authApiRoutes.js` (DRY)
+
 ---
 
 ## [1.2.0] — 2025-06-02
