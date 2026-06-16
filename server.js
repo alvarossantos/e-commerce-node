@@ -4,11 +4,38 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const methodOverride = require('method-override');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Config para jsond
+// ── Segurança ───────────────────────────────────────────────
+// Headers HTTP seguros (X-Content-Type-Options, X-Frame-Options, CSP, etc.)
+app.use(helmet({
+    contentSecurityPolicy: false, // Desabilitado para evitar quebras com EJS/estáticos
+}));
+
+// Rate-limit global: máximo 100 requisições por IP a cada 15 minutos
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { mensagem: 'Muitas requisições. Tente novamente mais tarde.' },
+});
+app.use(globalLimiter);
+
+// Rate-limit específico para login/cadastro: 10 tentativas a cada 15 minutos
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: 'Muitas tentativas de autenticação. Aguarde 15 minutos.',
+});
+
+// Config para json
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -56,7 +83,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // ── Rotas EJS (Server-Side Rendering) ──────────────────────
 app.use('/', lojaRoutes);
-app.use('/', authRoutes);
+app.use('/', authLimiter, authRoutes);
 
 app.use('/usuarios', usuarioRoutes);
 app.use('/enderecos', enderecoRoutes);
@@ -83,6 +110,29 @@ app.use('/api/carrinho', apiCarrinhoRoutes);
 app.use('/api/auth', apiAuthRoutes);
 app.use('/api/pedidos', apiPedidosRoutes);
 app.use('/api/usuarios', apiUsuariosRoutes);
+
+// ── Error Handler Global (Express 5 captura erros assíncronos automaticamente) ──
+app.use((err, req, res, next) => {
+    console.error('=== ERRO NÃO TRATADO ===', err);
+
+    // Erro de payload excedido (express.json)
+    if (err.type === 'entity.too.large') {
+        return res.status(413).json({ mensagem: 'Payload excede o tamanho máximo permitido.' });
+    }
+
+    // Erro de sintaxe JSON
+    if (err.type === 'parse.failed') {
+        return res.status(400).json({ mensagem: 'JSON malformado.' });
+    }
+
+    // Erro genérico
+    const statusCode = err.status || err.statusCode || 500;
+    res.status(statusCode).json({
+        mensagem: process.env.NODE_ENV === 'production'
+            ? 'Erro interno do servidor.'
+            : err.message || 'Erro interno do servidor.',
+    });
+});
 
 if (process.env.NODE_ENV !== 'test') {
     app.listen(PORT, () => {

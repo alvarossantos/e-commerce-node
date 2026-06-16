@@ -7,6 +7,9 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASS,
     port: process.env.DB_PORT,
+    max: 20,                          // Máximo de conexões simultâneas no pool
+    idleTimeoutMillis: 30000,         // Fecha conexão ociosa após 30s
+    connectionTimeoutMillis: 2000,    // Timeout de conexão: 2s
 });
 
 // Testar conexão assim que for carregado

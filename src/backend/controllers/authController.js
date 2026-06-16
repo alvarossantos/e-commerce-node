@@ -1,7 +1,14 @@
 const AuthService = require('../services/authService');
 
-exports.renderizarLogin = (req, res) => res.render('login', { layout: 'layout_cliente', erro: req.query.erro });
-exports.renderizarCadastro = (req, res) => res.render('cadastro', { layout: 'layout_cliente' });
+exports.renderizarLogin = (req, res) => res.render('login', {
+    layout: 'layout_cliente',
+    erro: req.query.erro,
+    sucesso: req.query.sucesso,
+});
+exports.renderizarCadastro = (req, res) => res.render('cadastro', {
+    layout: 'layout_cliente',
+    erro: req.query.erro,
+});
 
 // Processa o Login
 exports.fazerLogin = async (req, res) => {
@@ -36,20 +43,20 @@ exports.fazerLogout = (req, res) => {
     res.redirect('/');
 };
 
-// Cadastro
+// Cadastro (usa Post/Redirect/Get para evitar reenvio ao F5)
 exports.fazerCadastro = async (req, res) => {
     try {
         const { nome, email, senha, cpf, data_nascimento } = req.body;
 
         await AuthService.cadastrarUsuario({ nome, email, senha, cpf, data_nascimento });
 
-        res.render('login', { layout: 'layout_cliente', sucesso: 'Cadastro realizado com sucesso!' });
+        res.redirect('/login?sucesso=' + encodeURIComponent('Cadastro realizado com sucesso!'));
     } catch (erro) {
-        // Erros esperados do service → mensagem amigável
+        // Erros esperados do service → mantém na página de cadastro com mensagem
         if (erro.tipo) {
-            return res.render('cadastro', { layout: 'layout_cliente', erro: erro.mensagem });
+            return res.redirect('/cadastro?erro=' + encodeURIComponent(erro.mensagem));
         }
         console.error("=== ERRO AO FAZER CADASTRO ===", erro);
-        res.render('cadastro', { layout: 'layout_cliente', erro: 'Erro interno ao fazer cadastro.' });
+        res.redirect('/cadastro?erro=' + encodeURIComponent('Erro interno ao fazer cadastro.'));
     }
 };
