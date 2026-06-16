@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
+const { SECRET } = require('../services/authService');
 
 exports.verificarAdmin = (req, res, next) => {
     const token = req.cookies.token;

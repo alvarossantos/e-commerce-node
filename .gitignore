@@ -21,5 +21,8 @@ coverage/
 .DS_Store
 Thumbs.db
 
-# Uploads de usuários (não versionar arquivos binários)
+# Uploads de imagens (não versionar arquivos binários)
 src/frontend/static/img/produtos/uploads/
+src/frontend/static/img/usuarios/*.webp
+src/frontend/static/img/usuarios/*.jpg
+src/frontend/static/img/usuarios/*.png

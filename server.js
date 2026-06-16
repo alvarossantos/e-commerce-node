@@ -107,7 +107,7 @@ const apiUsuariosRoutes = require('./src/backend/routes/api/usuariosApiRoutes');
 app.use('/api/loja', apiLojaRoutes);
 app.use('/api/produtos', apiProdutosRoutes);
 app.use('/api/carrinho', apiCarrinhoRoutes);
-app.use('/api/auth', apiAuthRoutes);
+app.use('/api/auth', authLimiter, apiAuthRoutes);
 app.use('/api/pedidos', apiPedidosRoutes);
 app.use('/api/usuarios', apiUsuariosRoutes);
 

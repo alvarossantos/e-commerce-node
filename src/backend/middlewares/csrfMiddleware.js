@@ -8,7 +8,13 @@
 
 const crypto = require('crypto');
 
-const CSRF_SECRET = process.env.JWT_SECRET || 'csrf_secret_fallback';
+if (!process.env.CSRF_SECRET) {
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('CSRF_SECRET não configurado. Defina a variável de ambiente CSRF_SECRET.');
+    }
+    console.warn('⚠️  CSRF_SECRET não configurado. Usando fallback para desenvolvimento.');
+}
+const CSRF_SECRET = process.env.CSRF_SECRET || 'csrf_secret_dev_fallback';
 const TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hora
 
 /**

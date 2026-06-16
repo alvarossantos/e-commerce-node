@@ -1,13 +1,12 @@
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const EnderecoRepository = require('../repositories/enderecoRepository');
 const Usuario = require('../models/usuarioModel');
-const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const { SECRET } = require('../services/authService');
 
 exports.renderizarPerfil = async (req, res) => {
     try {

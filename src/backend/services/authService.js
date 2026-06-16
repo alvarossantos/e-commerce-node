@@ -7,6 +7,12 @@ const jwt = require('jsonwebtoken');
 const UsuarioRepository = require('../repositories/usuarioRepository');
 const CarrinhoRepository = require('../repositories/carrinhoRepository');
 
+if (!process.env.JWT_SECRET) {
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('JWT_SECRET não configurado. Defina a variável de ambiente JWT_SECRET.');
+    }
+    console.warn('⚠️  JWT_SECRET não configurado. Usando fallback para desenvolvimento.');
+}
 const SECRET = process.env.JWT_SECRET || 'chave_super_secreta';
 
 // ──────────────────────────────────────────────

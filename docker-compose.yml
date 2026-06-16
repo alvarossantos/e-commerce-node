@@ -49,7 +49,7 @@ services:
       DB_HOST: db                   # nome do serviço acima
       DB_PORT: 5432
       DB_USER: ${DB_USER:-nexstore}
-      DB_PASSWORD: ${DB_PASS:-nexstore123}
+      DB_PASS: ${DB_PASS:-nexstore123}
       DB_NAME: ${DB_NAME:-ecommerce_db}
       JWT_SECRET: ${JWT_SECRET:-troque_esta_chave_em_producao}
     volumes:
