@@ -32,6 +32,11 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ sucesso: false, mensagem: 'E-mail ou senha incorretos.' });
         }
 
+        // Verifica se a conta está ativa
+        if (usuario.ativo === false) {
+            return res.status(403).json({ sucesso: false, mensagem: 'Conta desativada. Entre em contato com o suporte.' });
+        }
+
         const token = jwt.sign({
             id: usuario.id,
             nome: usuario.nome,
@@ -39,7 +44,7 @@ router.post('/login', async (req, res) => {
             url_foto: usuario.url_foto
         }, SECRET, { expiresIn: '24h' });
 
-        res.cookie('token', token, { httpOnly: true, secure: false });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
         // Migrar carrinho do visitante para o banco
         if (req.cookies.carrinho_visitante) {

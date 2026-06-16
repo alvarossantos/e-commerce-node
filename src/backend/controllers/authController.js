@@ -23,6 +23,11 @@ exports.fazerLogin = async (req, res) => {
             return res.redirect('/login?erro=E-mail ou senha incorretos.');
         }
 
+        // Verifica se a conta está ativa
+        if (usuario.ativo === false) {
+            return res.redirect('/login?erro=Conta desativada. Entre em contato com o suporte.');
+        }
+
         // Cria um crachá JWT de 24 horas
         const token = jwt.sign({ id: usuario.id, 
             nome: usuario.nome, 
@@ -30,7 +35,7 @@ exports.fazerLogin = async (req, res) => {
             url_foto: usuario.url_foto
         }, SECRET, { expiresIn: '24h' });
 
-        res.cookie('token', token, { httpOnly: true, secure: false });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
         if (req.cookies.carrinho_visitante) {
             const CarrinhoRepository = require('../repositories/carrinhoRepository');

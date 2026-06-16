@@ -19,6 +19,24 @@ e adota [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [1.3.0] — 2025-06-15
+
+### Adicionado
+- **API REST completa** sob `/api/` com endpoints JSON para autenticação, produtos, carrinho, pedidos e perfil
+- **6 novos routers de API:** `authApiRoutes.js`, `produtosApiRoutes.js`, `lojaApiRoutes.js`, `carrinhoApiRoutes.js`, `pedidosApiRoutes.js`, `usuariosApiRoutes.js`
+- **Documentação da API REST** na seção 9 do README
+- **Alpine.js** para microinteratividade reativa (contador de carrinho, toast de notificações)
+
+### Corrigido
+- Carrinho de visitantes agora faz merge corretamente ao fazer login
+- Cookie do token JWT agora usa flag `secure` baseada em `NODE_ENV` (produção)
+- Contas inativas agora são bloqueadas no login (EJS e API REST)
+- Alpine.js fixado em versão específica (`@3.14.9`) para evitar quebras
+- README atualizado com variável `DB_PASS` correta
+- Removida dependência morta `express-session`
+
+---
+
 ## [1.2.0] — 2025-06-02
 
 ### Adicionado

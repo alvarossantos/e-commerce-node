@@ -57,7 +57,7 @@ exports.atualizarDados = async (req, res) => {
             url_foto: usuarioSalvo.url_foto
         }, SECRET, { expiresIn: '24h' });
 
-        res.cookie('token', token, { httpOnly: true, secure: false });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
 
         res.redirect('/perfil?sucesso=Dados atualizados com sucesso!');
     } catch (erro) {
@@ -108,7 +108,7 @@ exports.atualizarFoto = async (req, res) => {
             url_foto: caminhoFoto 
         }, SECRET, { expiresIn: '24h' });
 
-        res.cookie('token', token, { httpOnly: true, secure: false });
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax' });
         res.redirect('/perfil?sucesso=Foto de perfil processada e atualizada com sucesso!');
     } catch (erro) {
         console.error("=== ERRO AO ATUALIZAR FOTO ===", erro);

@@ -140,7 +140,7 @@ psql -U postgres -d "e-commerce" -f database.sql
 ```env
 PORT=4000
 DB_USER=postgres
-DB_PASSWORD=sua_senha_postgres
+DB_PASS=sua_senha_postgres
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=e-commerce
