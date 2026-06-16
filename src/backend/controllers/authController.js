@@ -21,6 +21,10 @@ exports.fazerLogin = async (req, res) => {
             res.redirect('/');
         }
     } catch (erro) {
+        // Erros esperados do service → redireciona com mensagem amigável
+        if (erro.tipo) {
+            return res.redirect(`/login?erro=${encodeURIComponent(erro.mensagem)}`);
+        }
         console.error("=== ERRO AO FAZER LOGIN ===", erro);
         res.redirect('/login?erro=Erro interno ao fazer login.');
     }
@@ -41,10 +45,11 @@ exports.fazerCadastro = async (req, res) => {
 
         res.render('login', { layout: 'layout_cliente', sucesso: 'Cadastro realizado com sucesso!' });
     } catch (erro) {
+        // Erros esperados do service → mensagem amigável
+        if (erro.tipo) {
+            return res.render('cadastro', { layout: 'layout_cliente', erro: erro.mensagem });
+        }
         console.error("=== ERRO AO FAZER CADASTRO ===", erro);
-
-        // Erros de validação do service → mensagem amigável
-        const mensagem = erro.mensagem || 'Erro interno ao fazer cadastro.';
-        res.render('cadastro', { layout: 'layout_cliente', erro: mensagem });
+        res.render('cadastro', { layout: 'layout_cliente', erro: 'Erro interno ao fazer cadastro.' });
     }
 };
