@@ -8,7 +8,7 @@ const verificarAdmin = (req, res, next) => {
     if (usuario && usuario.is_admin) {
         return next();
     }
-    res.redirect('/erro=Acesso Negado! Área restrita a administradores da loja.');
+    res.redirect('/?erro=' + encodeURIComponent('Acesso Negado! Área restrita a administradores da loja.'));
 }
 
 router.use(verificarLogado);

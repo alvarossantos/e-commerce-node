@@ -6,9 +6,19 @@ const express = require('express');
 const router = express.Router();
 const AuthService = require('../../services/authService');
 const { verificarLogadoOpcional } = require('../../middlewares/authMiddleware');
+const rateLimit = require('express-rate-limit');
+
+// Rate-limit específico para login/cadastro API: 10 tentativas a cada 15 minutos
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { sucesso: false, mensagem: 'Muitas tentativas de autenticação. Aguarde 15 minutos.' },
+});
 
 // POST /api/auth/login — Fazer login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { email, senha } = req.body;
 
@@ -49,7 +59,7 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /api/auth/cadastro — Cadastrar novo usuário
-router.post('/cadastro', async (req, res) => {
+router.post('/cadastro', authLimiter, async (req, res) => {
     try {
         const { nome, email, senha, cpf, data_nascimento } = req.body;
 

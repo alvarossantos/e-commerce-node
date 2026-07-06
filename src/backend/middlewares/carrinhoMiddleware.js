@@ -15,8 +15,14 @@ module.exports = async (req, res, next) => {
         }
         else if (req.cookies.carrinho_visitante) {
             // Usuário Anônimo: lê os cookies
-            const carrinho = JSON.parse(req.cookies.carrinho_visitante);
-            total = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+            try {
+                const carrinho = JSON.parse(req.cookies.carrinho_visitante);
+                if (Array.isArray(carrinho)) {
+                    total = carrinho.reduce((acc, item) => acc + (item.quantidade || 0), 0);
+                }
+            } catch (e) {
+                // Cookie malformado — ignora e zera o total
+            }
         }
 
         res.locals.totalItensCarrinho = total;

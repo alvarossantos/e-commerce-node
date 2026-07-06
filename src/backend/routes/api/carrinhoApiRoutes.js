@@ -73,27 +73,29 @@ router.post('/adicionar', async (req, res) => {
             return res.status(404).json({ sucesso: false, mensagem: 'Produto não encontrado.' });
         }
 
+        // Declarar carrinho_visitante aqui para acesso posterior ao calcular totalItens
+        let carrinhoVisitante = [];
+
         if (req.usuarioLogado) {
             await CarrinhoRepository.adicionarItem(req.usuarioLogado.id, produtoId, quantidade);
         } else {
-            let carrinho = [];
             if (req.cookies.carrinho_visitante) {
                 try {
-                    carrinho = JSON.parse(req.cookies.carrinho_visitante);
-                    if (!Array.isArray(carrinho)) carrinho = [];
+                    carrinhoVisitante = JSON.parse(req.cookies.carrinho_visitante);
+                    if (!Array.isArray(carrinhoVisitante)) carrinhoVisitante = [];
                 } catch (e) {
-                    carrinho = [];
+                    carrinhoVisitante = [];
                 }
             }
 
-            const index = carrinho.findIndex(item => item.produtoId == produtoId);
+            const index = carrinhoVisitante.findIndex(item => item.produtoId == produtoId);
             if (index > -1) {
-                carrinho[index].quantidade += quantidade;
+                carrinhoVisitante[index].quantidade += quantidade;
             } else {
-                carrinho.push({ produtoId, quantidade });
+                carrinhoVisitante.push({ produtoId, quantidade });
             }
 
-            res.cookie('carrinho_visitante', JSON.stringify(carrinho), {
+            res.cookie('carrinho_visitante', JSON.stringify(carrinhoVisitante), {
                 maxAge: 30 * 24 * 60 * 60 * 1000,
                 httpOnly: true,
                 path: '/'
@@ -106,12 +108,10 @@ router.post('/adicionar', async (req, res) => {
             const itens = await CarrinhoRepository.listarItens(req.usuarioLogado.id);
             totalItens = itens.reduce((acc, item) => acc + item.quantidade, 0);
         } else {
-            let carrinho = [];
-            try {
-                carrinho = JSON.parse(req.cookies.carrinho_visitante || '[]');
-                if (!Array.isArray(carrinho)) carrinho = [];
-            } catch (e) { carrinho = []; }
-            totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+            // Usar o array já modificado acima em vez de reler o cookie.
+            // res.cookie() atualiza o header de resposta mas NÃO atualiza req.cookies,
+            // portanto reler o cookie aqui retornaria o valor DESATUALIZADO.
+            totalItens = carrinhoVisitante.reduce((acc, item) => acc + item.quantidade, 0);
         }
 
         res.json({
@@ -155,6 +155,29 @@ router.post('/remover/:produtoId', async (req, res) => {
         if (req.usuarioLogado) {
             itensCarrinho = await CarrinhoRepository.listarItens(req.usuarioLogado.id);
             valorTotal = itensCarrinho.reduce((acc, item) => acc + (parseFloat(item.preco) * item.quantidade), 0);
+        } else if (req.cookies.carrinho_visitante) {
+            // Para visitantes, reconstrói a lista a partir do cookie atualizado
+            let itensCookie = [];
+            try {
+                itensCookie = JSON.parse(req.cookies.carrinho_visitante);
+                if (!Array.isArray(itensCookie)) itensCookie = [];
+            } catch (e) {
+                itensCookie = [];
+            }
+
+            for (let item of itensCookie) {
+                const produtoBD = await ProdutoRepository.buscarPorId(item.produtoId);
+                if (produtoBD) {
+                    itensCarrinho.push({
+                        produto_id: produtoBD.id,
+                        nome: produtoBD.nome,
+                        preco: produtoBD.preco,
+                        url_imagem: produtoBD.url_imagem,
+                        quantidade: item.quantidade
+                    });
+                    valorTotal += (parseFloat(produtoBD.preco) * item.quantidade);
+                }
+            }
         }
 
         const totalItens = itensCarrinho.reduce((acc, item) => acc + item.quantidade, 0);

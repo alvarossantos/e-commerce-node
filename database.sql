@@ -79,7 +79,7 @@ CREATE TABLE pedidos (
     status VARCHAR(20) DEFAULT 'pendente'
         CHECK (status IN ('pendente', 'em_analise', 'pago', 'enviado', 'entregue', 'cancelado')),
     valor_total DECIMAL(10, 2) DEFAULT 0.00, -- Valor total do pedido (soma dos itens)
-    alertas_enviados INTEGER DEFAULT 0
+    alertas_enviados INTEGER DEFAULT 0,
     endereco_id INTEGER REFERENCES enderecos(id) ON DELETE SET NULL;
 );
 

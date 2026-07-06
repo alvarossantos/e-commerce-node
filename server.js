@@ -26,15 +26,6 @@ const globalLimiter = rateLimit({
 });
 app.use(globalLimiter);
 
-// Rate-limit específico para login/cadastro: 10 tentativas a cada 15 minutos
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: 'Muitas tentativas de autenticação. Aguarde 15 minutos.',
-});
-
 // Config para json
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -83,7 +74,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 // ── Rotas EJS (Server-Side Rendering) ──────────────────────
 app.use('/', lojaRoutes);
-app.use('/', authLimiter, authRoutes);
+app.use('/', authRoutes);
 
 app.use('/usuarios', usuarioRoutes);
 app.use('/enderecos', enderecoRoutes);
@@ -107,7 +98,7 @@ const apiUsuariosRoutes = require('./src/backend/routes/api/usuariosApiRoutes');
 app.use('/api/loja', apiLojaRoutes);
 app.use('/api/produtos', apiProdutosRoutes);
 app.use('/api/carrinho', apiCarrinhoRoutes);
-app.use('/api/auth', authLimiter, apiAuthRoutes);
+app.use('/api/auth', apiAuthRoutes);
 app.use('/api/pedidos', apiPedidosRoutes);
 app.use('/api/usuarios', apiUsuariosRoutes);
 

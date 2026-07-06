@@ -76,7 +76,7 @@ exports.renderizarCarrinho = async (req, res) => {
                         produto_id: produtoBD.id,
                         nome: produtoBD.nome,
                         preco: produtoBD.preco,
-                        imagem: produtoBD.url_imagem,
+                        url_imagem: produtoBD.url_imagem,
                         quantidade: item.quantidade
                     });
                     valorTotal += (parseFloat(produtoBD.preco) * item.quantidade);
