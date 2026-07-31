@@ -18,8 +18,8 @@ A **NexStore** é uma plataforma de vendas online *Full-Stack*. O seu grande dif
 
 O sistema possui duas frentes principais:
 
-* **Visão do Cliente (Loja):** Navegação de catálogo com busca e filtros por categoria, sistema de avaliações com estrelas, carrinho de compras híbrido (funciona via *Cookies* para visitantes e via *Banco de Dados* para utilizadores logados), checkout completo com seleção de endereço e pagamento, emissão de recibos e histórico de pedidos.
-* **Visão do Administrador (Painel):** Dashboard analítico com KPIs (faturamento, total de vendas, usuários registrados e alertas de estoque baixo), gestão completa de produtos (CRUD com upload de imagens via Sharp) e controle do status de entrega dos pedidos.
+* **Visão do Cliente (Loja):** Navegação de catálogo com busca e filtros por categoria, sistema de avaliações com estrelas, carrinho de compras híbrido (funciona via *Cookies* para visitantes e via *Banco de Dados* para utilizadores logados), checkout completo com seleção de endereço e pagamento, emissão de recibos e histórico de pedidos, **chatbot de suporte IA** com contexto de pedidos e produtos.
+* **Visão do Administrador (Painel):** Dashboard analítico com KPIs (faturamento, total de vendas, usuários registrados e alertas de estoque baixo), gestão completa de produtos (CRUD com upload de imagens via Sharp), **geração automática de descrições via IA**, controle do status de entrega dos pedidos.
 
 Além disso, o projeto adota práticas avançadas de engenharia de software, incluindo **containerização (Docker)**, **pipeline de CI/CD (GitHub Actions)**, **cobertura de testes automatizados**, **proteção CSRF**, **acessibilidade (a11y)** e **SEO otimizado**.
 
@@ -35,6 +35,7 @@ Além disso, o projeto adota práticas avançadas de engenharia de software, inc
 * **Sharp:** Processamento e conversão de imagens para WebP.
 * **Multer:** Upload de arquivos em memória.
 * **Method Override:** Suporte a PUT/DELETE via formulários HTML.
+* **OpenAI SDK:** Integração com IA multi-provedor (OpenAI, Gemini, OpenRouter).
 
 **Front-end:**
 * **EJS:** Motor de templates dinâmicos com layouts separados (admin/cliente).
@@ -72,6 +73,7 @@ Além disso, o projeto adota práticas avançadas de engenharia de software, inc
  ┃ ┃ ┣ 📂 middlewares        # Auth (JWT), CSRF, Upload (Multer), Carrinho
  ┃ ┃ ┣ 📂 models            # Modelo de dados (Produto, Usuario)
  ┃ ┃ ┣ 📂 repositories      # Queries SQL parametrizadas (7 repositories)
+ ┃ ┃ ┣ 📂 services          # Lógica de negócio (auth + IA)
  ┃ ┃ ┗ 📂 routes            # Definição de rotas EJS (11 arquivos)
  ┃ ┃   ┗ 📂 api             # API REST — rotas JSON (6 arquivos)
  ┃ ┗ 📂 frontend
@@ -145,7 +147,13 @@ DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=e-commerce
 JWT_SECRET=sua_chave_secreta_super_segura
+
+# ── IA ──
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=sua-chave
 ```
+
+> **Modelos disponíveis:** Veja a tabela completa no `.env.example` do repositório.
 
 **4.** Inicie o servidor:
 
@@ -267,6 +275,30 @@ A partir da versão 1.3.0, o NexStore disponibiliza uma API REST completa sob o 
 | `GET` | `/api/usuarios/me` | Dados completos do perfil | Sim |
 | `GET` | `/api/usuarios/me/enderecos` | Endereços do usuário | Sim |
 
+### Inteligência Artificial
+
+| Método | Endpoint | Descrição | Auth |
+|--------|----------|-----------|------|
+| `GET` | `/api/ia/status` | Status do provedor de IA ativo | Não |
+| `POST` | `/api/ia/descricao` | Gerar descrição de produto com IA | Não |
+| `POST` | `/api/ia/chat` | Chatbot de suporte ao cliente | Opcional |
+
+**Gerar descrição:**
+
+```json
+// POST /api/ia/descricao
+{ "nome": "Mouse Logitech G Pro", "categoria": "Periféricos", "preco": 580.00 }
+// Resposta: { "sucesso": true, "descricao": "O Mouse Logitech G Pro Wireless..." }
+```
+
+**Chatbot:**
+
+```json
+// POST /api/ia/chat
+{ "message": "Vocês têm monitor gamer?", "history": [] }
+// Resposta: { "sucesso": true, "resposta": "Sim! Temos o Monitor LG UltraGear..." }
+```
+
 > **Formato de resposta:** Todas as rotas retornam JSON no padrão `{ sucesso: true/false, ... }`.
 
 ---
@@ -283,7 +315,8 @@ A partir da versão 1.3.0, o NexStore disponibiliza uma API REST completa sob o 
 | **Banco** | PostgreSQL 16 (pool de conexões) |
 | **Template Engine** | EJS com layouts separados |
 | **Frontend Interativo** | Alpine.js (microinteratividade reativa) |
-| **API REST** | 6 routers JSON (`/api/*`) — 15+ endpoints |
+| **API REST** | 7 routers JSON (`/api/*`) — 18+ endpoints |
+| **IA** | Multi-provedor (OpenAI, Gemini, OpenRouter) — chatbot + descrições |
 | **Autenticação** | JWT (cookies httpOnly, 24h) |
 | **Senhas** | Bcrypt (salt 10) |
 | **Upload** | Multer (memory) + Sharp (WebP) |
