@@ -47,7 +47,15 @@
                         </div>
                         <div class="col-12">
                             <label for="produto-descricao" class="form-label small fw-bold text-muted">Descrição Completa</label>
-                            <textarea id="produto-descricao" name="descricao" class="form-control" rows="4" required><%= produto ? produto.descricao : '' %></textarea>
+                            <div class="input-group">
+                                <textarea id="produto-descricao" name="descricao" class="form-control" rows="4" required><%= produto ? produto.descricao : '' %></textarea>
+                                <button type="button" id="btn-gerar-descricao" class="btn btn-outline-primary fw-bold" title="Gerar descrição com IA" onclick="gerarDescricaoIA()">
+                                    <i class="fas fa-magic me-1" aria-hidden="true"></i> Gerar com IA
+                                </button>
+                            </div>
+                            <div id="ia-status" class="form-text text-muted d-none mt-1">
+                                <i class="fas fa-spinner fa-spin me-1" aria-hidden="true"></i> <span id="ia-status-texto">Gerando descrição...</span>
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label for="produto-ean" class="form-label small fw-bold text-muted">Código de Barras (EAN)</label>
@@ -66,3 +74,56 @@
         </div>
     </div>
 </div>
+
+<script>
+async function gerarDescricaoIA() {
+    const nome = document.getElementById('produto-nome').value.trim();
+    const categoria = document.getElementById('produto-categoria').value;
+    const preco = document.getElementById('produto-preco').value;
+    const textarea = document.getElementById('produto-descricao');
+    const btn = document.getElementById('btn-gerar-descricao');
+    const status = document.getElementById('ia-status');
+    const statusTexto = document.getElementById('ia-status-texto');
+
+    if (!nome) {
+        alert('Preencha o nome do produto antes de gerar a descrição.');
+        return;
+    }
+
+    // UI: estado carregando
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Gerando...';
+    status.classList.remove('d-none');
+    statusTexto.textContent = 'A IA está analisando o produto...';
+
+    try {
+        const resp = await fetch('/api/ia/descricao', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nome, categoria, preco })
+        });
+
+        const data = await resp.json();
+
+        if (data.sucesso) {
+            textarea.value = data.descricao;
+            statusTexto.textContent = 'Descrição gerada com sucesso!';
+            status.classList.remove('text-danger');
+            status.classList.add('text-success');
+            setTimeout(() => {
+                status.classList.add('d-none');
+                status.classList.remove('text-success');
+            }, 3000);
+        } else {
+            statusTexto.textContent = 'Erro: ' + data.mensagem;
+            status.classList.add('text-danger');
+        }
+    } catch (e) {
+        statusTexto.textContent = 'Erro de conexão. Verifique sua internet.';
+        status.classList.add('text-danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-magic me-1"></i> Gerar com IA';
+    }
+}
+</script>

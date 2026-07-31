@@ -94,6 +94,7 @@ const apiCarrinhoRoutes = require('./src/backend/routes/api/carrinhoApiRoutes');
 const apiAuthRoutes = require('./src/backend/routes/api/authApiRoutes');
 const apiPedidosRoutes = require('./src/backend/routes/api/pedidosApiRoutes');
 const apiUsuariosRoutes = require('./src/backend/routes/api/usuariosApiRoutes');
+const apiIaRoutes = require('./src/backend/routes/api/iaApiRoutes');
 
 app.use('/api/loja', apiLojaRoutes);
 app.use('/api/produtos', apiProdutosRoutes);
@@ -101,6 +102,7 @@ app.use('/api/carrinho', apiCarrinhoRoutes);
 app.use('/api/auth', apiAuthRoutes);
 app.use('/api/pedidos', apiPedidosRoutes);
 app.use('/api/usuarios', apiUsuariosRoutes);
+app.use('/api/ia', apiIaRoutes);
 
 // ── Error Handler Global (Express 5 captura erros assíncronos automaticamente) ──
 app.use((err, req, res, next) => {
